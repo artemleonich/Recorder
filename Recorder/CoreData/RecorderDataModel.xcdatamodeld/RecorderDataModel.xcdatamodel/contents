@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="AudioNoteEntity" representedClassName="AudioNoteEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="audioFileName" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="duration" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isTranscriptionCompleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="languageCode" attributeType="String" defaultValueString="ru"/>
+        <attribute name="title" attributeType="String"/>
+        <attribute name="transcript" attributeType="String" defaultValueString=""/>
+    </entity>
+    <fetchIndex name="byCreatedAtIndex">
+        <fetchIndexElement property="createdAt" type="Binary" order="descending"/>
+    </fetchIndex>
+    <fetchIndex name="byTitleIndex">
+        <fetchIndexElement property="title" type="Binary" order="ascending"/>
+    </fetchIndex>
+</model>

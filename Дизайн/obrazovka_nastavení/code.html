@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html class="dark" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Настройки</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#0A84FF",
+            "background-light": "#f6f7f8",
+            "background-dark": "#1C1C1E",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.75rem",
+            "xl": "1rem",
+            "full": "9999px"
+          },
+          backdropBlur: {
+            'xl': '24px',
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      background: linear-gradient(180deg, #1C1C1E 0%, #000000 100%);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-transparent overflow-x-hidden">
+<div class="flex flex-col gap-2 p-4 pb-2 pt-16">
+<h1 class="text-white text-4xl font-bold leading-tight tracking-tight">Настройки</h1>
+</div>
+<div class="flex flex-col gap-8 p-4">
+<div>
+<h3 class="text-[#8E8E93] text-sm font-medium uppercase tracking-wider px-4 pb-2">Язык</h3>
+<div class="overflow-hidden rounded-xl bg-white/5 backdrop-blur-xl ring-1 ring-white/10">
+<div class="flex items-center justify-between p-4 min-h-[56px] bg-black/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-2xl flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-9">language</span>
+<p class="text-white text-base font-medium tracking-tight">Язык</p>
+</div>
+<div class="shrink-0 flex items-center gap-2">
+<span class="text-[#8E8E93] text-base font-normal">Русский</span>
+<span class="material-symbols-outlined text-[#8E8E93] text-2xl">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-[#8E8E93] text-sm font-medium uppercase tracking-wider px-4 pb-2">Внешний вид</h3>
+<div class="overflow-hidden rounded-xl bg-white/5 backdrop-blur-xl ring-1 ring-white/10">
+<div class="flex flex-col gap-px bg-[#38383A]">
+<div class="flex items-center justify-between p-4 min-h-[56px] bg-black/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-white text-2xl flex items-center justify-center rounded-lg bg-[#8E8E93] shrink-0 size-9">contrast</span>
+<p class="text-white text-base font-medium tracking-tight">Тема</p>
+</div>
+<div class="shrink-0 flex items-center gap-2">
+<span class="text-[#8E8E93] text-base font-normal">Авто</span>
+<span class="material-symbols-outlined text-[#8E8E93] text-2xl">chevron_right</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 min-h-[56px] bg-black/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-white text-2xl flex items-center justify-center rounded-lg bg-[#8E8E93] shrink-0 size-9">text_fields</span>
+<p class="text-white text-base font-medium tracking-tight">Размер текста</p>
+</div>
+<div class="shrink-0 flex items-center gap-2">
+<span class="material-symbols-outlined text-[#8E8E93] text-2xl">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-[#8E8E93] text-sm font-medium uppercase tracking-wider px-4 pb-2">Транскрипция</h3>
+<div class="overflow-hidden rounded-xl bg-white/5 backdrop-blur-xl ring-1 ring-white/10">
+<div class="flex flex-col gap-px bg-[#38383A]">
+<div class="flex items-center justify-between p-4 min-h-[56px] bg-black/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-white text-2xl flex items-center justify-center rounded-lg bg-[#5856D6] shrink-0 size-9">format_quote</span>
+<p class="text-white text-base font-medium tracking-tight">Автоматическая пунктуация</p>
+</div>
+<div class="shrink-0">
+<div class="relative inline-flex h-8 w-14 cursor-pointer items-center rounded-full">
+<input checked="" class="peer sr-only" id="punctuation-toggle" type="checkbox"/>
+<div class="h-full w-full rounded-full bg-gray-500 peer-checked:bg-primary"></div>
+<div class="absolute left-1 top-1 size-6 rounded-full bg-white transition-transform peer-checked:translate-x-6"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 min-h-[56px] bg-black/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-white text-2xl flex items-center justify-center rounded-lg bg-[#34C759] shrink-0 size-9">schedule</span>
+<p class="text-white text-base font-medium tracking-tight">Временные метки</p>
+</div>
+<div class="shrink-0">
+<div class="relative inline-flex h-8 w-14 cursor-pointer items-center rounded-full">
+<input class="peer sr-only" id="timestamp-toggle" type="checkbox"/>
+<div class="h-full w-full rounded-full bg-gray-500 peer-checked:bg-primary"></div>
+<div class="absolute left-1 top-1 size-6 rounded-full bg-white transition-transform peer-checked:translate-x-6"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-[#8E8E93] text-sm font-medium uppercase tracking-wider px-4 pb-2">О приложении</h3>
+<div class="overflow-hidden rounded-xl bg-white/5 backdrop-blur-xl ring-1 ring-white/10">
+<div class="flex flex-col gap-px bg-[#38383A]">
+<div class="flex items-center justify-between p-4 min-h-[56px] bg-black/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-white text-2xl flex items-center justify-center rounded-lg bg-[#FF9500] shrink-0 size-9">info</span>
+<p class="text-white text-base font-medium tracking-tight">Версия</p>
+</div>
+<div class="shrink-0">
+<span class="text-[#8E8E93] text-base font-normal">1.0.0</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 min-h-[56px] bg-black/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-white text-2xl flex items-center justify-center rounded-lg bg-[#0A84FF] shrink-0 size-9">shield</span>
+<p class="text-white text-base font-medium tracking-tight">Политика конфиденциальности</p>
+</div>
+<div class="shrink-0 flex items-center gap-2">
+<span class="material-symbols-outlined text-[#8E8E93] text-2xl">chevron_right</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 min-h-[56px] bg-black/10">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-white text-2xl flex items-center justify-center rounded-lg bg-[#FF2D55] shrink-0 size-9">star</span>
+<p class="text-white text-base font-medium tracking-tight">Оценить приложение</p>
+</div>
+<div class="shrink-0 flex items-center gap-2">
+<span class="material-symbols-outlined text-[#8E8E93] text-2xl">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

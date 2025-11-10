@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html class="dark" lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Речь в Текст - Запись</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style type="text/tailwindcss">
+      @layer utilities {
+        .liquid-glass {
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(40px);
+          -webkit-backdrop-filter: blur(40px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .record-glow {
+          box-shadow: 0 0 15px 5px rgba(255, 59, 48, 0.4), 0 0 30px 10px rgba(255, 59, 48, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+        .text-glow {
+           text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+        }
+      }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#197fe6",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111921",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1rem", "2xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: 100dvh;
+      background-color: #0d0d0d;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display text-white">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden bg-gradient-to-br from-[#2a0a1e] via-[#0d0d0d] to-[#111827]">
+<div class="absolute inset-0 z-0">
+<div class="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-red-500/20 blur-3xl"></div>
+<div class="absolute -right-20 bottom-20 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl"></div>
+</div>
+<div class="relative z-10 flex h-full flex-col p-6 pt-10 sm:p-8">
+<header class="flex items-center justify-between">
+<h1 class="text-xl font-bold tracking-tight text-glow">Речь в Текст</h1>
+<button class="liquid-glass flex h-12 w-12 cursor-pointer items-center justify-center rounded-full text-gray-200 transition-colors hover:bg-white/10">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</header>
+<main class="flex flex-1 flex-col items-center justify-center py-8">
+<div class="flex flex-col items-center gap-6">
+<p class="text-7xl font-bold tabular-nums tracking-tighter text-glow">00:01</p>
+<div class="flex h-[80px] w-full max-w-xs items-center justify-center">
+<img class="h-full w-full object-contain" data-alt="Red sound wave visualization indicating active recording" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0G9c2EP9VKDfPdpkQQjyYma7XVuwGKd7ncE7kL9h0CbFqI6xmvGD5D7tma481hM0bNzrFaAvL34jn75N5uooOkj2Dem_z2LYojGriZmfnnhAw8aUkipwAesmtM2qhXLPYvHnlhGMomrVlAdboc7ktmTu6Ezp0x6OMKLHdtXeCoax95lVfutjICGp7yiSM_zjdQyNosMsm8SLhmNma0j6cdHmxXqrRhVx4dIyIhk0w6GzFL9t_rxYbF-mnELtXU90nsH7-CCz4OyQ"/>
+</div>
+</div>
+</main>
+<footer class="flex flex-col items-center gap-4 pb-6">
+<div class="relative flex h-24 w-24 items-center justify-center">
+<div class="absolute inset-0 animate-ping rounded-full bg-red-600/50"></div>
+<button class="record-glow flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-[#FF3B30] text-white transition-transform active:scale-95">
+<div class="h-8 w-8 rounded bg-white"></div>
+</button>
+</div>
+<p class="text-base font-medium leading-normal text-gray-300">Идёт запись...</p>
+</footer>
+</div>
+</div>
+
+</body></html>
