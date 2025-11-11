@@ -4,100 +4,75 @@ import UniformTypeIdentifiers
 struct NotesListView: View {
     @ObservedObject var viewModel: NotesListViewModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.locale) private var locale
+
     var body: some View {
         NavigationView {
             ZStack {
-                // Gradient background
                 LinearGradient(
-                    colors: [
-                        Color(hex: "1E1A4D"),
-                        Color(hex: "111921"),
-                        Color(hex: "1C0F3A")
-                    ],
+                    colors: backgroundGradient,
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .ignoresSafeArea()
-                
-                // Blurred circles background
-                ZStack {
-                    Circle()
-                        .fill(Color.purple.opacity(0.3))
-                        .frame(width: 300, height: 300)
-                        .blur(radius: 100)
-                        .offset(x: -100, y: -200)
-                    
-                    Circle()
-                        .fill(Color.blue.opacity(0.3))
-                        .frame(width: 300, height: 300)
-                        .blur(radius: 100)
-                        .offset(x: 100, y: 200)
-                }
-                
+
                 VStack(spacing: 0) {
                     // Sticky header
                     VStack(spacing: 16) {
                         HStack {
-                            Text(NSLocalizedString("notes.title", comment: "Notes title"))
+                            Text("notes.title")
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
-                                .foregroundColor(.white)
-                            
+
                             Spacer()
-                            
+
                             // Import button
                             Button(action: {
                                 viewModel.showImportPicker = true
                             }) {
                                 Image(systemName: "square.and.arrow.down")
                                     .font(.title3)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.accentColor)
                                     .frame(width: 44, height: 44)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .fill(.ultraThinMaterial)
-                                    )
+                                    .background(buttonBackground)
                             }
-                            .accessibilityLabel(NSLocalizedString("accessibility.import.button", comment: "Import audio"))
+                            .accessibilityLabel(LocalizationHelper.string("accessibility.import.button", locale: locale))
                         }
-                        
+
                         // Search bar
                         HStack {
                             Image(systemName: "magnifyingglass")
-                                .foregroundColor(.white.opacity(0.5))
-                            
-                            TextField(NSLocalizedString("notes.search.placeholder", comment: "Search placeholder"), text: $viewModel.searchQuery)
-                                .foregroundColor(.white)
+                                .foregroundColor(.secondary)
+
+                            TextField(LocalizedStringKey("notes.search.placeholder"), text: $viewModel.searchQuery)
+                                .foregroundColor(.primary)
                                 .autocorrectionDisabled()
-                                .accessibilityLabel(NSLocalizedString("accessibility.search.field", comment: "Search field"))
-                                .accessibilityHint(NSLocalizedString("accessibility.search.hint", comment: "Search hint"))
+                                .accessibilityLabel(LocalizationHelper.string("accessibility.search.field", locale: locale))
+                                .accessibilityHint(LocalizationHelper.string("accessibility.search.hint", locale: locale))
                         }
                         .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(.ultraThinMaterial)
-                        )
+                        .background(searchBackground)
                     }
                     .padding()
-                    .background(.ultraThinMaterial)
-                    
+                    .background(headerBackground)
+
                     // Notes list
                     if viewModel.isLoading {
                         Spacer()
                         ProgressView()
-                            .tint(.white)
+                            .tint(Color.accentColor)
                         Spacer()
                     } else if viewModel.filteredNotes.isEmpty {
                         Spacer()
                         VStack(spacing: 16) {
                             Image(systemName: "mic.slash")
                                 .font(.system(size: 60))
-                                .foregroundColor(.white.opacity(0.3))
-                            
-                            Text(viewModel.searchQuery.isEmpty ? NSLocalizedString("notes.empty", comment: "No notes") : NSLocalizedString("notes.search.empty", comment: "Nothing found"))
+                                .foregroundColor(.secondary)
+
+                            Text(viewModel.searchQuery.isEmpty ? LocalizedStringKey("notes.empty") : LocalizedStringKey("notes.search.empty"))
                                 .font(.title3)
-                                .foregroundColor(.white.opacity(0.5))
+                                .foregroundColor(.secondary)
                         }
                         Spacer()
                     } else {
@@ -109,16 +84,16 @@ struct NotesListView: View {
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                     .accessibilityLabel(noteAccessibilityLabel(for: note))
-                                    .accessibilityHint(NSLocalizedString("accessibility.note.hint", comment: "Note hint"))
+                                    .accessibilityHint(LocalizationHelper.string("accessibility.note.hint", locale: locale))
                                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                         Button(role: .destructive) {
                                             Task {
                                                 await viewModel.deleteNote(note)
                                             }
                                         } label: {
-                                            Label(NSLocalizedString("notes.delete", comment: "Delete"), systemImage: "trash")
+                                            Label("notes.delete", systemImage: "trash")
                                         }
-                                        .accessibilityLabel(String(format: NSLocalizedString("accessibility.delete.note", comment: "Delete note"), note.title))
+                                        .accessibilityLabel(LocalizationHelper.formattedString("accessibility.delete.note", locale: locale, note.title))
                                     }
                                 }
                             }
@@ -141,7 +116,7 @@ struct NotesListView: View {
             ),
             error: viewModel.error
         ) { error in
-            Button(NSLocalizedString("button.ok", comment: "OK button")) {
+            Button("button.ok") {
                 viewModel.error = nil
             }
         } message: { error in
@@ -166,21 +141,57 @@ struct NotesListView: View {
             }
         }
     }
-    
+
     private func noteAccessibilityLabel(for note: AudioNote) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM, HH:mm"
+        formatter.locale = locale
         let dateString = formatter.string(from: note.createdAt)
-        
+
         let minutes = Int(note.duration) / 60
         let seconds = Int(note.duration) % 60
         let durationString = String(format: "%02d:%02d", minutes, seconds)
-        
-        let statusString = note.isTranscriptionCompleted ? 
-            NSLocalizedString("note.status.completed", comment: "Completed status") : 
-            NSLocalizedString("note.status.processing", comment: "Processing status")
-        
-        return String(format: NSLocalizedString("accessibility.note.label", comment: "Note label"), 
-                     note.title, dateString, durationString, statusString)
+
+        let statusKey = note.isTranscriptionCompleted ? "note.status.completed" : "note.status.processing"
+        let statusString = LocalizationHelper.string(statusKey, locale: locale)
+
+        return LocalizationHelper.formattedString(
+            "accessibility.note.label",
+            locale: locale,
+            note.title,
+            dateString,
+            durationString,
+            statusString
+        )
+    }
+
+    private var backgroundGradient: [Color] {
+        switch colorScheme {
+        case .dark:
+            return [
+                Color(hex: "1E1A4D"),
+                Color(hex: "111921"),
+                Color(hex: "1C0F3A")
+            ]
+        default:
+            return [
+                Color(.systemBackground),
+                Color(.systemGroupedBackground)
+            ]
+        }
+    }
+
+    private var headerBackground: some View {
+        Color(.systemGroupedBackground).opacity(colorScheme == .dark ? 0.6 : 0.9)
+    }
+
+    private var searchBackground: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(Color(.secondarySystemGroupedBackground))
+    }
+
+    private var buttonBackground: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(Color(.secondarySystemGroupedBackground))
     }
 }

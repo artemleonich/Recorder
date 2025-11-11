@@ -28,6 +28,7 @@ final class SettingsViewModel: ObservableObject {
     
     private let notesStorageService: NotesStorageService
     private let logger = Logger(subsystem: "com.app.recorder", category: "settings")
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization
     
@@ -37,6 +38,13 @@ final class SettingsViewModel: ObservableObject {
     ) {
         self.settings = settings
         self.notesStorageService = notesStorageService
+
+        settings.objectWillChange
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Public Methods

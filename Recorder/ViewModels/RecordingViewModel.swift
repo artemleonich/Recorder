@@ -93,6 +93,7 @@ final class RecordingViewModel: ObservableObject {
             try await audioRecorder.startRecording(fileName: fileName)
             logger.info("Recording started successfully")
         } catch {
+            currentRecordingFileName = nil
             self.error = error as? RecorderError ?? .recordingFailed(error)
             logger.error("Failed to start recording: \(error.localizedDescription)")
         }
@@ -142,8 +143,9 @@ final class RecordingViewModel: ObservableObject {
             
             // Reset recording state
             currentRecordingFileName = nil
-            
+
         } catch {
+            currentRecordingFileName = nil
             self.error = error as? RecorderError ?? .recordingFailed(error)
             logger.error("Failed to stop recording: \(error.localizedDescription)")
         }

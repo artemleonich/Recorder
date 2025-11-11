@@ -128,23 +128,31 @@ final class NotesListViewModel: ObservableObject {
             return
         }
         
+        // Gain access to security-scoped resource if needed
+        let shouldStopAccessing = url.startAccessingSecurityScopedResource()
+        defer {
+            if shouldStopAccessing {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+
         // Validate file extension
         let fileExtension = url.pathExtension.lowercased()
         let supportedExtensions = ["m4a", "mp3", "wav", "aac", "caf"]
-        
-        guard supportedExtensions.contains(fileExtension) else {
+
+        guard !fileExtension.isEmpty, supportedExtensions.contains(fileExtension) else {
             error = .importFailed(NSError(
                 domain: "NotesListViewModel",
                 code: -2,
-                userInfo: [NSLocalizedDescriptionKey: "Unsupported file format: \(fileExtension)"]
+                userInfo: [NSLocalizedDescriptionKey: "Unsupported file format: \(fileExtension.isEmpty ? "unknown" : fileExtension)"]
             ))
-            logger.warning("Unsupported file format: \(fileExtension)")
+            logger.warning("Unsupported file format: \(fileExtension.isEmpty ? "none" : fileExtension)")
             return
         }
-        
+
         do {
-            // Generate unique filename
-            let fileName = "\(UUID().uuidString).m4a"
+            // Generate unique filename preserving extension
+            let fileName = "\(UUID().uuidString).\(fileExtension)"
             
             // Copy file to recordings directory
             let destinationURL = try fileStorageService.saveAudioFile(from: url, withName: fileName)
@@ -210,11 +218,11 @@ final class NotesListViewModel: ObservableObject {
         languageCode: String
     ) {
         logger.info("Starting transcription for imported note: \(noteID)")
-        
+
         Task {
-            // Get transcription mode from settings
-            let mode = settings.transcriptionModeEnum
-            
+            // Get transcription mode from settings on the main actor
+            let mode = await MainActor.run { settings.transcriptionModeEnum }
+
             // Start transcription with progress updates
             let progressStream = await transcriptionService.transcribe(
                 audioURL: audioURL,
