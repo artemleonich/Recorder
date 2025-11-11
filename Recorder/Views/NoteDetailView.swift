@@ -7,6 +7,8 @@ struct NoteDetailView: View {
     @ObservedObject var viewModel: NoteDetailViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.locale) private var locale
     @State private var showShareSheet = false
     @State private var showMenu = false
     @State private var editedTitle: String
@@ -20,18 +22,13 @@ struct NoteDetailView: View {
     
     var body: some View {
         ZStack {
-            // Gradient background
             LinearGradient(
-                colors: [
-                    Color(hex: "1E1A4D"),
-                    Color(hex: "111921"),
-                    Color(hex: "1C0F3A")
-                ],
+                colors: backgroundGradient,
                 startPoint: .top,
                 endPoint: .bottom
             )
             .ignoresSafeArea()
-            
+
             VStack(spacing: 0) {
                 // Custom navigation bar
                 HStack {
@@ -40,148 +37,148 @@ struct NoteDetailView: View {
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.title3)
-                            .foregroundColor(.white)
+                            .foregroundColor(.accentColor)
                             .frame(width: 44, height: 44)
                     }
-                    .accessibilityLabel(NSLocalizedString("accessibility.back.button", comment: "Back button"))
-                    
-                    Text(NSLocalizedString("note.detail.title", comment: "Note details title"))
+                    .accessibilityLabel(LocalizationHelper.string("accessibility.back.button", locale: locale))
+
+                    Text("note.detail.title")
                         .font(.headline)
-                        .foregroundColor(.white)
-                    
+                        .foregroundColor(.primary)
+
                     Spacer()
-                    
+
                     Menu {
                         Button(action: {
                             showShareSheet = true
                         }) {
-                            Label(NSLocalizedString("note.menu.share", comment: "Share"), systemImage: "square.and.arrow.up")
+                            Label("note.menu.share", systemImage: "square.and.arrow.up")
                         }
-                        
+
                         Button(role: .destructive, action: {
                             // Delete action would go here
                         }) {
-                            Label(NSLocalizedString("notes.delete", comment: "Delete"), systemImage: "trash")
+                            Label("notes.delete", systemImage: "trash")
                         }
                     } label: {
                         Image(systemName: "ellipsis")
                             .font(.title3)
-                            .foregroundColor(.white)
+                            .foregroundColor(.accentColor)
                             .frame(width: 44, height: 44)
                     }
-                    .accessibilityLabel(NSLocalizedString("accessibility.menu.button", comment: "Menu button"))
+                    .accessibilityLabel(LocalizationHelper.string("accessibility.menu.button", locale: locale))
                 }
                 .padding(.horizontal)
                 .padding(.vertical, 8)
-                .background(.ultraThinMaterial)
+                .background(Color(.systemGroupedBackground).opacity(colorScheme == .dark ? 0.6 : 0.9))
                 
                 ScrollView {
                     VStack(spacing: 16) {
                         // Title field
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(NSLocalizedString("note.field.title", comment: "Title field"))
+                            Text("note.field.title")
                                 .font(.caption)
-                                .foregroundColor(.white.opacity(0.6))
-                            
-                            TextField(NSLocalizedString("note.field.title.placeholder", comment: "Title placeholder"), text: $editedTitle)
-                                .foregroundColor(.white)
+                                .foregroundColor(.secondary)
+
+                            TextField(LocalizedStringKey("note.field.title.placeholder"), text: $editedTitle)
+                                .foregroundColor(.primary)
                                 .padding()
                                 .background(
                                     RoundedRectangle(cornerRadius: 12)
-                                        .fill(.ultraThinMaterial)
+                                        .fill(Color(.secondarySystemGroupedBackground))
                                 )
                                 .onSubmit {
                                     Task {
                                         await viewModel.updateTitle(editedTitle)
                                     }
                                 }
-                                .accessibilityLabel(NSLocalizedString("accessibility.title.field", comment: "Title field"))
-                                .accessibilityHint(NSLocalizedString("accessibility.title.hint", comment: "Title hint"))
+                                .accessibilityLabel(LocalizationHelper.string("accessibility.title.field", locale: locale))
+                                .accessibilityHint(LocalizationHelper.string("accessibility.title.hint", locale: locale))
                         }
                         .padding(.horizontal)
                         .padding(.top)
-                        
+
                         // Date info
                         HStack {
                             Image(systemName: "calendar")
-                                .foregroundColor(.white.opacity(0.6))
-                            
+                                .foregroundColor(.secondary)
+
                             Text(formatDate(viewModel.note.createdAt))
                                 .font(.caption)
-                                .foregroundColor(.white.opacity(0.6))
-                            
+                                .foregroundColor(.secondary)
+
                             Spacer()
-                            
+
                             Image(systemName: "waveform")
-                                .foregroundColor(.white.opacity(0.6))
-                            
+                                .foregroundColor(.secondary)
+
                             Text(formatDuration(viewModel.note.duration))
                                 .font(.caption)
-                                .foregroundColor(.white.opacity(0.6))
+                                .foregroundColor(.secondary)
                         }
                         .padding(.horizontal)
-                        
+
                         // Transcript editor
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
-                                Text(NSLocalizedString("note.field.transcript", comment: "Transcript field"))
+                                Text("note.field.transcript")
                                     .font(.caption)
-                                    .foregroundColor(.white.opacity(0.6))
-                                
+                                    .foregroundColor(.secondary)
+
                                 Spacer()
-                                
+
                                 // Transcription status indicator
                                 if !viewModel.note.isTranscriptionCompleted {
                                     HStack(spacing: 4) {
                                         ProgressView()
                                             .scaleEffect(0.7)
-                                            .tint(.yellow)
-                                        Text(NSLocalizedString("note.status.processing", comment: "Processing status"))
+                                            .tint(Color.accentColor)
+                                        Text("note.status.processing")
                                             .font(.caption)
-                                            .foregroundColor(.yellow)
+                                            .foregroundColor(.secondary)
                                     }
                                 }
                             }
-                            
+
                             if viewModel.note.isTranscriptionCompleted || !editedTranscript.isEmpty {
                                 TextEditor(text: $editedTranscript)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.primary)
                                     .scrollContentBackground(.hidden)
                                     .frame(minHeight: 200)
                                     .padding()
                                     .background(
                                         RoundedRectangle(cornerRadius: 12)
-                                            .fill(.ultraThinMaterial)
+                                            .fill(Color(.secondarySystemGroupedBackground))
                                     )
-                                    .accessibilityLabel(NSLocalizedString("accessibility.transcript.field", comment: "Transcript field"))
-                                    .accessibilityHint(NSLocalizedString("accessibility.transcript.hint", comment: "Transcript hint"))
+                                    .accessibilityLabel(LocalizationHelper.string("accessibility.transcript.field", locale: locale))
+                                    .accessibilityHint(LocalizationHelper.string("accessibility.transcript.hint", locale: locale))
                             } else {
                                 // Placeholder while transcription is in progress
                                 VStack(spacing: 12) {
                                     ProgressView()
-                                        .tint(.white)
-                                    Text(NSLocalizedString("note.transcription.inprogress", comment: "Transcription in progress"))
+                                        .tint(Color.accentColor)
+                                    Text("note.transcription.inprogress")
                                         .font(.body)
-                                        .foregroundColor(.white.opacity(0.6))
+                                        .foregroundColor(.secondary)
                                 }
                                 .frame(minHeight: 200)
                                 .frame(maxWidth: .infinity)
                                 .padding()
                                 .background(
                                     RoundedRectangle(cornerRadius: 12)
-                                        .fill(.ultraThinMaterial)
+                                        .fill(Color(.secondarySystemGroupedBackground))
                                 )
                             }
                         }
                         .padding(.horizontal)
-                        
+
                         // Share button
                         Button(action: {
                             showShareSheet = true
                         }) {
                             HStack {
                                 Image(systemName: "square.and.arrow.up")
-                                Text(NSLocalizedString("note.share.button", comment: "Share button"))
+                                Text("note.share.button")
                             }
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
@@ -191,8 +188,8 @@ struct NoteDetailView: View {
                                     .fill(Color(hex: "3b82f6"))
                             )
                         }
-                        .accessibilityLabel(NSLocalizedString("accessibility.share.button", comment: "Share button"))
-                        .accessibilityHint(NSLocalizedString("accessibility.share.hint", comment: "Share hint"))
+                        .accessibilityLabel(LocalizationHelper.string("accessibility.share.button", locale: locale))
+                        .accessibilityHint(LocalizationHelper.string("accessibility.share.hint", locale: locale))
                         .padding(.horizontal)
                         
                         // Spacer for audio player
@@ -213,23 +210,30 @@ struct NoteDetailView: View {
                             in: 0...max(viewModel.duration, 1)
                         )
                         .tint(Color(hex: "3b82f6"))
-                        .accessibilityLabel(NSLocalizedString("accessibility.playback.slider", comment: "Playback slider"))
-                        .accessibilityValue(String(format: NSLocalizedString("accessibility.playback.value", comment: "Playback value"), formatDuration(viewModel.currentTime), formatDuration(viewModel.duration)))
-                        
+                        .accessibilityLabel(LocalizationHelper.string("accessibility.playback.slider", locale: locale))
+                        .accessibilityValue(
+                            LocalizationHelper.formattedString(
+                                "accessibility.playback.value",
+                                locale: locale,
+                                formatDuration(viewModel.currentTime),
+                                formatDuration(viewModel.duration)
+                            )
+                        )
+
                         HStack {
                             Text(formatDuration(viewModel.currentTime))
                                 .font(.caption)
-                                .foregroundColor(.white.opacity(0.6))
-                            
+                                .foregroundColor(.secondary)
+
                             Spacer()
-                            
+
                             Text(formatDuration(viewModel.duration))
                                 .font(.caption)
-                                .foregroundColor(.white.opacity(0.6))
+                                .foregroundColor(.secondary)
                         }
                     }
                     .padding(.horizontal)
-                    
+
                     // Playback controls
                     HStack(spacing: 40) {
                         Button(action: {
@@ -237,11 +241,11 @@ struct NoteDetailView: View {
                         }) {
                             Image(systemName: "gobackward.10")
                                 .font(.title2)
-                                .foregroundColor(.white)
+                                .foregroundColor(.accentColor)
                         }
-                        .accessibilityLabel(NSLocalizedString("accessibility.skip.backward", comment: "Skip backward"))
-                        .accessibilityHint(NSLocalizedString("accessibility.skip.backward.hint", comment: "Skip backward hint"))
-                        
+                        .accessibilityLabel(LocalizationHelper.string("accessibility.skip.backward", locale: locale))
+                        .accessibilityHint(LocalizationHelper.string("accessibility.skip.backward.hint", locale: locale))
+
                         Button(action: {
                             Task {
                                 await viewModel.togglePlayPause()
@@ -251,27 +255,27 @@ struct NoteDetailView: View {
                                 .font(.system(size: 60))
                                 .foregroundColor(Color(hex: "3b82f6"))
                         }
-                        .accessibilityLabel(viewModel.isPlaying ? 
-                            NSLocalizedString("accessibility.pause.button", comment: "Pause button") : 
-                            NSLocalizedString("accessibility.play.button", comment: "Play button"))
-                        .accessibilityHint(viewModel.isPlaying ? 
-                            NSLocalizedString("accessibility.pause.hint", comment: "Pause hint") : 
-                            NSLocalizedString("accessibility.play.hint", comment: "Play hint"))
-                        
+                        .accessibilityLabel(viewModel.isPlaying ?
+                            LocalizationHelper.string("accessibility.pause.button", locale: locale) :
+                            LocalizationHelper.string("accessibility.play.button", locale: locale))
+                        .accessibilityHint(viewModel.isPlaying ?
+                            LocalizationHelper.string("accessibility.pause.hint", locale: locale) :
+                            LocalizationHelper.string("accessibility.play.hint", locale: locale))
+
                         Button(action: {
                             viewModel.skipForward()
                         }) {
                             Image(systemName: "goforward.10")
                                 .font(.title2)
-                                .foregroundColor(.white)
+                                .foregroundColor(.accentColor)
                         }
-                        .accessibilityLabel(NSLocalizedString("accessibility.skip.forward", comment: "Skip forward"))
-                        .accessibilityHint(NSLocalizedString("accessibility.skip.forward.hint", comment: "Skip forward hint"))
+                        .accessibilityLabel(LocalizationHelper.string("accessibility.skip.forward", locale: locale))
+                        .accessibilityHint(LocalizationHelper.string("accessibility.skip.forward.hint", locale: locale))
                     }
                     .padding(.bottom, 8)
                 }
                 .padding(.vertical)
-                .background(.ultraThinMaterial)
+                .background(Color(.systemGroupedBackground).opacity(colorScheme == .dark ? 0.6 : 0.95))
             }
         }
         .navigationBarHidden(true)
@@ -306,7 +310,7 @@ struct NoteDetailView: View {
             ),
             error: viewModel.error
         ) { error in
-            Button(NSLocalizedString("button.ok", comment: "OK button")) {
+            Button("button.ok") {
                 viewModel.error = nil
             }
         } message: { error in
@@ -324,6 +328,7 @@ struct NoteDetailView: View {
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy, HH:mm"
+        formatter.locale = locale
         return formatter.string(from: date)
     }
     
@@ -331,6 +336,22 @@ struct NoteDetailView: View {
         let minutes = Int(duration) / 60
         let seconds = Int(duration) % 60
         return String(format: "%02d:%02d", minutes, seconds)
+    }
+
+    private var backgroundGradient: [Color] {
+        switch colorScheme {
+        case .dark:
+            return [
+                Color(hex: "1E1A4D"),
+                Color(hex: "111921"),
+                Color(hex: "1C0F3A")
+            ]
+        default:
+            return [
+                Color(.systemBackground),
+                Color(.systemGroupedBackground)
+            ]
+        }
     }
 }
 

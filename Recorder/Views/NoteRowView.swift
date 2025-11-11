@@ -2,7 +2,9 @@ import SwiftUI
 
 struct NoteRowView: View {
     let note: AudioNote
-    
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.locale) private var locale
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Title and date
@@ -10,48 +12,48 @@ struct NoteRowView: View {
                 Text(note.title)
                     .font(.body)
                     .fontWeight(.semibold)
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                
+
                 Spacer()
-                
+
                 Text(formatDate(note.createdAt))
                     .font(.caption)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondary)
             }
-            
+
             // Duration and status
             HStack {
                 // Duration
                 HStack(spacing: 4) {
                     Image(systemName: "waveform")
                         .font(.caption)
-                        .foregroundColor(.white.opacity(0.6))
-                    
+                        .foregroundColor(.secondary)
+
                     Text(formatDuration(note.duration))
                         .font(.caption)
-                        .foregroundColor(.white.opacity(0.6))
+                        .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 // Transcription status
                 HStack(spacing: 4) {
                     if note.isTranscriptionCompleted {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.caption)
                             .foregroundColor(.green)
-                        
-                        Text(NSLocalizedString("note.status.completed", comment: "Completed status"))
+
+                        Text("note.status.completed")
                             .font(.caption)
                             .foregroundColor(.green)
                     } else {
                         Image(systemName: "hourglass")
                             .font(.caption)
                             .foregroundColor(.yellow)
-                        
-                        Text(NSLocalizedString("note.status.processing", comment: "Processing status"))
+
+                        Text("note.status.processing")
                             .font(.caption)
                             .foregroundColor(.yellow)
                     }
@@ -60,14 +62,22 @@ struct NoteRowView: View {
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.ultraThinMaterial)
+            Group {
+                if colorScheme == .dark {
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(.ultraThinMaterial)
+                } else {
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color(.secondarySystemGroupedBackground))
+                }
+            }
         )
     }
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM, HH:mm"
+        formatter.locale = locale
         return formatter.string(from: date)
     }
     
@@ -76,4 +86,5 @@ struct NoteRowView: View {
         let seconds = Int(duration) % 60
         return String(format: "%02d:%02d", minutes, seconds)
     }
+
 }

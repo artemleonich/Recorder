@@ -80,8 +80,7 @@ struct RecorderApp: App {
             .environment(\.managedObjectContext, persistenceController.container.viewContext)
             .environmentObject(appSettings)
             .preferredColorScheme(appSettings.colorScheme)
-            .environment(\.locale, appSettings.localeIdentifier != nil ? Locale(identifier: appSettings.localeIdentifier!) : .current)
-            .id(appSettings.appLanguage + appSettings.appAppearance)
+            .environment(\.locale, appSettings.locale)
         }
     }
 }

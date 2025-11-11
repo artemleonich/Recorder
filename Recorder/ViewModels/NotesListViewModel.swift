@@ -218,11 +218,11 @@ final class NotesListViewModel: ObservableObject {
         languageCode: String
     ) {
         logger.info("Starting transcription for imported note: \(noteID)")
-        
+
         Task {
-            // Get transcription mode from settings
-            let mode = settings.transcriptionModeEnum
-            
+            // Get transcription mode from settings on the main actor
+            let mode = await MainActor.run { settings.transcriptionModeEnum }
+
             // Start transcription with progress updates
             let progressStream = await transcriptionService.transcribe(
                 audioURL: audioURL,
