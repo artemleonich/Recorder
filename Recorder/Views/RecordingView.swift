@@ -3,59 +3,37 @@ import SwiftUI
 struct RecordingView: View {
     @ObservedObject var viewModel: RecordingViewModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.locale) private var locale
     
     var body: some View {
         ZStack {
-            // Gradient background
             LinearGradient(
-                colors: [
-                    Color(hex: "2a0a1e"),
-                    Color(hex: "0d0d0d"),
-                    Color(hex: "111827")
-                ],
+                colors: backgroundGradient,
                 startPoint: .top,
                 endPoint: .bottom
             )
             .ignoresSafeArea()
-            
-            // Blurred circles background
-            ZStack {
-                Circle()
-                    .fill(Color.red.opacity(0.3))
-                    .frame(width: 300, height: 300)
-                    .blur(radius: 100)
-                    .offset(x: -100, y: -200)
-                
-                Circle()
-                    .fill(Color.blue.opacity(0.3))
-                    .frame(width: 300, height: 300)
-                    .blur(radius: 100)
-                    .offset(x: 100, y: 200)
-            }
-            
+
             VStack(spacing: 40) {
                 // Header
                 HStack {
-                    Text(NSLocalizedString("app.title", comment: "App title"))
+                    Text("app.title")
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .shadow(color: .white.opacity(0.5), radius: 10)
-                    
+
                     Spacer()
                 }
                 .padding(.horizontal)
                 .padding(.top, 20)
-                
+
                 Spacer()
-                
+
                 // Timer
                 Text(formatDuration(viewModel.duration))
                     .font(.system(size: 72, weight: .bold))
-                    .foregroundColor(.white)
-                    .shadow(color: .white.opacity(0.5), radius: 20)
                     .monospacedDigit()
-                
+
                 // Waveform
                 WaveformView(audioLevel: viewModel.audioLevel)
                     .frame(height: 100)
@@ -95,32 +73,38 @@ struct RecordingView: View {
                     }
                 }
                 .disabled(viewModel.isTranscribing)
-                .accessibilityLabel(viewModel.isRecording ? 
-                    NSLocalizedString("accessibility.recording.stop", comment: "Stop recording") : 
-                    NSLocalizedString("accessibility.recording.start", comment: "Start recording"))
-                .accessibilityHint(viewModel.isRecording ? 
-                    NSLocalizedString("accessibility.recording.stop.hint", comment: "Stop recording hint") : 
-                    NSLocalizedString("accessibility.recording.start.hint", comment: "Start recording hint"))
-                
+                .accessibilityLabel(viewModel.isRecording ?
+                    LocalizationHelper.string("accessibility.recording.stop", locale: locale) :
+                    LocalizationHelper.string("accessibility.recording.start", locale: locale))
+                .accessibilityHint(viewModel.isRecording ?
+                    LocalizationHelper.string("accessibility.recording.stop.hint", locale: locale) :
+                    LocalizationHelper.string("accessibility.recording.start.hint", locale: locale))
+
                 // Status text
                 Text(statusText)
                     .font(.body)
-                    .foregroundColor(.white.opacity(0.7))
-                
+                    .foregroundColor(.secondary)
+
                 // Transcription progress
                 if viewModel.isTranscribing {
                     VStack(spacing: 8) {
                         ProgressView(value: viewModel.transcriptionProgress)
-                            .tint(.white)
+                            .tint(Color.accentColor)
                             .frame(width: 200)
-                            .accessibilityValue(String(format: NSLocalizedString("accessibility.transcription.progress.value", comment: "Transcription progress value"), Int(viewModel.transcriptionProgress * 100)))
-                        
-                        Text(String(format: NSLocalizedString("recording.transcription.progress", comment: "Transcription progress"), Int(viewModel.transcriptionProgress * 100)))
+                            .accessibilityValue(
+                                LocalizationHelper.formattedString(
+                                    "accessibility.transcription.progress.value",
+                                    locale: locale,
+                                    Int(viewModel.transcriptionProgress * 100)
+                                )
+                            )
+
+                        Text("recording.transcription.progress \(Int(viewModel.transcriptionProgress * 100))")
                             .font(.caption)
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(.secondary)
                     }
                 }
-                
+
                 Spacer()
             }
         }
@@ -131,7 +115,7 @@ struct RecordingView: View {
             ),
             error: viewModel.error
         ) { error in
-            Button(NSLocalizedString("button.ok", comment: "OK button")) {
+            Button("button.ok") {
                 viewModel.error = nil
             }
         } message: { error in
@@ -140,20 +124,36 @@ struct RecordingView: View {
             }
         }
     }
-    
-    private var statusText: String {
+
+    private var statusText: LocalizedStringKey {
         if viewModel.isTranscribing {
-            return NSLocalizedString("recording.status.processing", comment: "Processing status")
+            return "recording.status.processing"
         } else if viewModel.isRecording {
-            return NSLocalizedString("recording.status.recording", comment: "Recording status")
+            return "recording.status.recording"
         } else {
-            return NSLocalizedString("recording.status.idle", comment: "Idle status")
+            return "recording.status.idle"
         }
     }
-    
+
     private func formatDuration(_ duration: TimeInterval) -> String {
         let minutes = Int(duration) / 60
         let seconds = Int(duration) % 60
         return String(format: "%02d:%02d", minutes, seconds)
+    }
+
+    private var backgroundGradient: [Color] {
+        switch colorScheme {
+        case .dark:
+            return [
+                Color(hex: "2a0a1e"),
+                Color(hex: "0d0d0d"),
+                Color(hex: "111827")
+            ]
+        default:
+            return [
+                Color(.systemBackground),
+                Color(.systemGroupedBackground)
+            ]
+        }
     }
 }

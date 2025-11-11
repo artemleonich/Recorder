@@ -6,183 +6,151 @@ import UIKit
 struct SettingsView: View {
     @ObservedObject var viewModel: SettingsViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         NavigationView {
             ZStack {
-                // Gradient background
                 LinearGradient(
-                    colors: [
-                        Color.black,
-                        Color(hex: "0d0d0d"),
-                        Color(hex: "111827")
-                    ],
+                    colors: backgroundGradient,
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .ignoresSafeArea()
-                
+
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
                         // Title
-                        Text(NSLocalizedString("settings.title", comment: "Settings title"))
+                        Text("settings.title")
                             .font(.largeTitle)
                             .fontWeight(.bold)
-                            .foregroundColor(.white)
                             .padding(.horizontal)
                             .padding(.top)
-                        
+
                         // Language section
-                        SettingsSection(title: NSLocalizedString("settings.section.language", comment: "Language section"), icon: "globe", iconColor: .blue) {
-                            NavigationLink(destination: LanguageSelectionView(selectedLanguage: $viewModel.settings.appLanguage)) {
+                        SettingsSection(title: "settings.section.language", icon: "globe", iconColor: .blue) {
+                            NavigationLink(destination: LanguageSelectionView(selectedLanguage: binding(\.appLanguage))) {
                                 SettingsRow(
-                                    title: NSLocalizedString("settings.language.app", comment: "App language"),
+                                    title: "settings.language.app",
                                     value: languageDisplayName(viewModel.settings.appLanguage)
                                 )
                             }
                         }
-                        
+
                         // Appearance section
-                        SettingsSection(title: NSLocalizedString("settings.section.appearance", comment: "Appearance section"), icon: "paintbrush.fill", iconColor: .purple) {
-                            NavigationLink(destination: AppearanceSelectionView(selectedAppearance: $viewModel.settings.appAppearance)) {
+                        SettingsSection(title: "settings.section.appearance", icon: "paintbrush.fill", iconColor: .purple) {
+                            NavigationLink(destination: AppearanceSelectionView(selectedAppearance: binding(\.appAppearance))) {
                                 SettingsRow(
-                                    title: NSLocalizedString("settings.appearance.theme", comment: "Theme"),
+                                    title: "settings.appearance.theme",
                                     value: appearanceDisplayName(viewModel.settings.appAppearance)
                                 )
                             }
-                            
-                            NavigationLink(destination: Text(NSLocalizedString("settings.appearance.textsize", comment: "Text size"))) {
+
+                            NavigationLink(destination: Text("settings.appearance.textsize")) {
                                 SettingsRow(
-                                    title: NSLocalizedString("settings.appearance.textsize", comment: "Text size"),
-                                    value: NSLocalizedString("settings.appearance.textsize.system", comment: "System")
+                                    title: "settings.appearance.textsize",
+                                    value: "settings.appearance.textsize.system"
                                 )
                             }
                         }
-                        
+
                         // Transcription section
-                        SettingsSection(title: NSLocalizedString("settings.section.transcription", comment: "Transcription section"), icon: "waveform", iconColor: .green) {
-                            NavigationLink(destination: TranscriptionModeSelectionView(selectedMode: $viewModel.settings.transcriptionMode)) {
+                        SettingsSection(title: "settings.section.transcription", icon: "waveform", iconColor: .green) {
+                            NavigationLink(destination: TranscriptionModeSelectionView(selectedMode: binding(\.transcriptionMode))) {
                                 SettingsRow(
-                                    title: NSLocalizedString("settings.transcription.mode", comment: "Transcription mode"),
+                                    title: "settings.transcription.mode",
                                     value: transcriptionModeDisplayName(viewModel.settings.transcriptionMode)
                                 )
                             }
-                            
-                            Toggle(isOn: $viewModel.settings.allowAudioImport) {
-                                Text(NSLocalizedString("settings.transcription.import", comment: "Import audio"))
-                                    .foregroundColor(.white)
+
+                            Toggle(isOn: binding(\.allowAudioImport)) {
+                                Text("settings.transcription.import")
                             }
-                            .tint(Color.primary)
+                            .tint(Color.accentColor)
                             .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(.ultraThinMaterial)
-                            )
-                            
-                            Toggle(isOn: $viewModel.settings.archiveAudio) {
-                                Text(NSLocalizedString("settings.transcription.archive", comment: "Archive audio"))
-                                    .foregroundColor(.white)
+                            .background(sectionBackground)
+
+                            Toggle(isOn: binding(\.archiveAudio)) {
+                                Text("settings.transcription.archive")
                             }
-                            .tint(Color.primary)
+                            .tint(Color.accentColor)
                             .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(.ultraThinMaterial)
-                            )
-                            
+                            .background(sectionBackground)
+
                             VStack(alignment: .leading, spacing: 8) {
-                                Toggle(isOn: $viewModel.settings.autoDeleteOldMessages) {
-                                    Text(NSLocalizedString("settings.transcription.autodelete", comment: "Auto-delete"))
-                                        .foregroundColor(.white)
+                                Toggle(isOn: binding(\.autoDeleteOldMessages)) {
+                                    Text("settings.transcription.autodelete")
                                 }
-                                .tint(Color.primary)
-                                
+                                .tint(Color.accentColor)
+
                                 if viewModel.settings.autoDeleteOldMessages {
-                                    Picker(NSLocalizedString("settings.transcription.autodelete.days", comment: "Delete after"), selection: $viewModel.settings.autoDeleteDays) {
-                                        Text(NSLocalizedString("settings.transcription.autodelete.7days", comment: "7 days")).tag(7)
-                                        Text(NSLocalizedString("settings.transcription.autodelete.14days", comment: "14 days")).tag(14)
-                                        Text(NSLocalizedString("settings.transcription.autodelete.30days", comment: "30 days")).tag(30)
-                                        Text(NSLocalizedString("settings.transcription.autodelete.60days", comment: "60 days")).tag(60)
-                                        Text(NSLocalizedString("settings.transcription.autodelete.90days", comment: "90 days")).tag(90)
+                                    Picker("settings.transcription.autodelete.days", selection: binding(\.autoDeleteDays)) {
+                                        Text("settings.transcription.autodelete.7days").tag(7)
+                                        Text("settings.transcription.autodelete.14days").tag(14)
+                                        Text("settings.transcription.autodelete.30days").tag(30)
+                                        Text("settings.transcription.autodelete.60days").tag(60)
+                                        Text("settings.transcription.autodelete.90days").tag(90)
                                     }
                                     .pickerStyle(.menu)
-                                    .tint(Color.primary)
+                                    .tint(Color.accentColor)
                                 }
                             }
                             .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(.ultraThinMaterial)
-                            )
-                            
-                            Toggle(isOn: $viewModel.settings.autoBackup) {
-                                Text(NSLocalizedString("settings.transcription.autobackup", comment: "Auto-backup"))
-                                    .foregroundColor(.white)
+                            .background(sectionBackground)
+
+                            Toggle(isOn: binding(\.autoBackup)) {
+                                Text("settings.transcription.autobackup")
                             }
-                            .tint(Color.primary)
+                            .tint(Color.accentColor)
                             .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(.ultraThinMaterial)
-                            )
-                            
-                            Toggle(isOn: $viewModel.settings.soundEffects) {
-                                Text(NSLocalizedString("settings.transcription.soundeffects", comment: "Sound effects"))
-                                    .foregroundColor(.white)
+                            .background(sectionBackground)
+
+                            Toggle(isOn: binding(\.soundEffects)) {
+                                Text("settings.transcription.soundeffects")
                             }
-                            .tint(Color.primary)
+                            .tint(Color.accentColor)
                             .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(.ultraThinMaterial)
-                            )
+                            .background(sectionBackground)
                         }
-                        
+
                         // Storage info
-                        SettingsSection(title: NSLocalizedString("settings.section.storage", comment: "Storage section"), icon: "internaldrive", iconColor: .orange) {
+                        SettingsSection(title: "settings.section.storage", icon: "internaldrive", iconColor: .orange) {
                             VStack(alignment: .leading, spacing: 8) {
                                 HStack {
-                                    Text(NSLocalizedString("settings.storage.used", comment: "Used"))
-                                        .foregroundColor(.white.opacity(0.7))
+                                    Text("settings.storage.used")
+                                        .foregroundColor(.secondary)
                                     Spacer()
                                     Text(formatBytes(viewModel.storageUsed))
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.primary)
                                 }
-                                
+
                                 HStack {
-                                    Text(NSLocalizedString("settings.storage.available", comment: "Available"))
-                                        .foregroundColor(.white.opacity(0.7))
+                                    Text("settings.storage.available")
+                                        .foregroundColor(.secondary)
                                     Spacer()
                                     Text(formatBytes(viewModel.storageAvailable))
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.primary)
                                 }
                             }
                             .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(.ultraThinMaterial)
-                            )
+                            .background(sectionBackground)
                         }
-                        
+
                         // About section
-                        SettingsSection(title: NSLocalizedString("settings.section.about", comment: "About section"), icon: "info.circle", iconColor: .gray) {
+                        SettingsSection(title: "settings.section.about", icon: "info.circle", iconColor: .gray) {
                             HStack {
-                                Text(NSLocalizedString("settings.about.version", comment: "Version"))
-                                    .foregroundColor(.white)
+                                Text("settings.about.version")
                                 Spacer()
                                 Text("1.0.0")
-                                    .foregroundColor(.white.opacity(0.6))
+                                    .foregroundColor(.secondary)
                             }
                             .padding()
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(.ultraThinMaterial)
-                            )
-                            
-                            NavigationLink(destination: Text(NSLocalizedString("settings.about.privacy", comment: "Privacy policy"))) {
-                                SettingsRow(title: NSLocalizedString("settings.about.privacy", comment: "Privacy policy"))
+                            .background(sectionBackground)
+
+                            NavigationLink(destination: Text("settings.about.privacy")) {
+                                SettingsRow(title: "settings.about.privacy")
                             }
-                            
+
                             Button(action: {
                                 // Open App Store rating
                                 #if canImport(UIKit)
@@ -192,18 +160,14 @@ struct SettingsView: View {
                                 #endif
                             }) {
                                 HStack {
-                                    Text(NSLocalizedString("settings.about.rate", comment: "Rate app"))
-                                        .foregroundColor(.white)
+                                    Text("settings.about.rate")
                                     Spacer()
                                     Image(systemName: "chevron.right")
                                         .font(.caption)
-                                        .foregroundColor(.white.opacity(0.5))
+                                        .foregroundColor(.secondary)
                                 }
                                 .padding()
-                                .background(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(.ultraThinMaterial)
-                                )
+                                .background(sectionBackground)
                             }
                         }
                     }
@@ -217,59 +181,87 @@ struct SettingsView: View {
         }
     }
     
-    private func languageDisplayName(_ code: String) -> String {
+    private func languageDisplayName(_ code: String) -> LocalizedStringKey {
         switch code {
-        case "auto": return NSLocalizedString("settings.language.auto", comment: "Auto")
-        case "ru": return NSLocalizedString("settings.language.russian", comment: "Russian")
-        case "en": return NSLocalizedString("settings.language.english", comment: "English")
-        default: return NSLocalizedString("settings.language.auto", comment: "Auto")
+        case "auto": return "settings.language.auto"
+        case "ru": return "settings.language.russian"
+        case "en": return "settings.language.english"
+        default: return "settings.language.auto"
         }
     }
-    
-    private func appearanceDisplayName(_ appearance: String) -> String {
+
+    private func appearanceDisplayName(_ appearance: String) -> LocalizedStringKey {
         switch appearance {
-        case "system": return NSLocalizedString("settings.appearance.auto", comment: "Auto")
-        case "light": return NSLocalizedString("settings.appearance.light", comment: "Light")
-        case "dark": return NSLocalizedString("settings.appearance.dark", comment: "Dark")
-        default: return NSLocalizedString("settings.appearance.auto", comment: "Auto")
+        case "system": return "settings.appearance.auto"
+        case "light": return "settings.appearance.light"
+        case "dark": return "settings.appearance.dark"
+        default: return "settings.appearance.auto"
         }
     }
-    
-    private func transcriptionModeDisplayName(_ mode: String) -> String {
+
+    private func transcriptionModeDisplayName(_ mode: String) -> LocalizedStringKey {
         switch mode {
-        case "fast": return NSLocalizedString("settings.transcription.mode.fast", comment: "Fast")
-        case "accurate": return NSLocalizedString("settings.transcription.mode.accurate", comment: "Accurate")
-        default: return NSLocalizedString("settings.transcription.mode.fast", comment: "Fast")
+        case "fast": return "settings.transcription.mode.fast"
+        case "accurate": return "settings.transcription.mode.accurate"
+        default: return "settings.transcription.mode.fast"
         }
     }
-    
+
     private func formatBytes(_ bytes: Int64) -> String {
         let formatter = ByteCountFormatter()
         formatter.countStyle = .file
         return formatter.string(fromByteCount: bytes)
     }
+
+    private func binding<Value>(_ keyPath: ReferenceWritableKeyPath<AppSettings, Value>) -> Binding<Value> {
+        Binding(
+            get: { viewModel.settings[keyPath: keyPath] },
+            set: { viewModel.settings[keyPath: keyPath] = $0 }
+        )
+    }
+
+    private var backgroundGradient: [Color] {
+        switch colorScheme {
+        case .dark:
+            return [
+                Color.black,
+                Color(hex: "0d0d0d"),
+                Color(hex: "111827")
+            ]
+        default:
+            return [
+                Color(.systemGroupedBackground),
+                Color(.systemBackground)
+            ]
+        }
+    }
+
+    private var sectionBackground: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(Color(.secondarySystemGroupedBackground))
+    }
 }
 
 // Settings section component
 struct SettingsSection<Content: View>: View {
-    let title: String
+    let title: LocalizedStringKey
     let icon: String
     let iconColor: Color
     @ViewBuilder let content: Content
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
                 Image(systemName: icon)
                     .foregroundColor(iconColor)
                     .font(.caption)
-                
+
                 Text(title)
                     .font(.headline)
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(.secondary)
             }
             .padding(.horizontal)
-            
+
             VStack(spacing: 8) {
                 content
             }
@@ -280,29 +272,29 @@ struct SettingsSection<Content: View>: View {
 
 // Settings row component
 struct SettingsRow: View {
-    let title: String
-    var value: String? = nil
-    
+    let title: LocalizedStringKey
+    var value: LocalizedStringKey? = nil
+
     var body: some View {
         HStack {
             Text(title)
-                .foregroundColor(.white)
-            
+                .foregroundColor(.primary)
+
             Spacer()
-            
+
             if let value = value {
                 Text(value)
-                    .foregroundColor(.white.opacity(0.6))
+                    .foregroundColor(.secondary)
             }
-            
+
             Image(systemName: "chevron.right")
                 .font(.caption)
-                .foregroundColor(.white.opacity(0.5))
+                .foregroundColor(.secondary)
         }
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(.ultraThinMaterial)
+                .fill(Color(.secondarySystemGroupedBackground))
         )
     }
 }
@@ -311,13 +303,13 @@ struct SettingsRow: View {
 struct LanguageSelectionView: View {
     @Binding var selectedLanguage: String
     @Environment(\.dismiss) private var dismiss
-    
+
     let languages = [
-        ("auto", NSLocalizedString("settings.language.auto", comment: "Auto")),
-        ("ru", NSLocalizedString("settings.language.russian", comment: "Russian")),
-        ("en", NSLocalizedString("settings.language.english", comment: "English"))
+        ("auto", LocalizedStringKey("settings.language.auto")),
+        ("ru", LocalizedStringKey("settings.language.russian")),
+        ("en", LocalizedStringKey("settings.language.english"))
     ]
-    
+
     var body: some View {
         List {
             ForEach(languages, id: \.0) { code, name in
@@ -338,7 +330,7 @@ struct LanguageSelectionView: View {
                 }
             }
         }
-        .navigationTitle(NSLocalizedString("settings.section.language", comment: "Language"))
+        .navigationTitle("settings.section.language")
     }
 }
 
@@ -346,13 +338,13 @@ struct LanguageSelectionView: View {
 struct AppearanceSelectionView: View {
     @Binding var selectedAppearance: String
     @Environment(\.dismiss) private var dismiss
-    
+
     let appearances = [
-        ("system", NSLocalizedString("settings.appearance.auto", comment: "Auto")),
-        ("light", NSLocalizedString("settings.appearance.light", comment: "Light")),
-        ("dark", NSLocalizedString("settings.appearance.dark", comment: "Dark"))
+        ("system", LocalizedStringKey("settings.appearance.auto")),
+        ("light", LocalizedStringKey("settings.appearance.light")),
+        ("dark", LocalizedStringKey("settings.appearance.dark"))
     ]
-    
+
     var body: some View {
         List {
             ForEach(appearances, id: \.0) { code, name in
@@ -373,7 +365,7 @@ struct AppearanceSelectionView: View {
                 }
             }
         }
-        .navigationTitle(NSLocalizedString("settings.appearance.theme", comment: "Theme"))
+        .navigationTitle("settings.appearance.theme")
     }
 }
 
@@ -383,10 +375,10 @@ struct TranscriptionModeSelectionView: View {
     @Environment(\.dismiss) private var dismiss
     
     let modes = [
-        ("fast", NSLocalizedString("settings.transcription.mode.fast", comment: "Fast"), NSLocalizedString("settings.transcription.mode.fast.description", comment: "Fast description")),
-        ("accurate", NSLocalizedString("settings.transcription.mode.accurate", comment: "Accurate"), NSLocalizedString("settings.transcription.mode.accurate.description", comment: "Accurate description"))
+        ("fast", LocalizedStringKey("settings.transcription.mode.fast"), LocalizedStringKey("settings.transcription.mode.fast.description")),
+        ("accurate", LocalizedStringKey("settings.transcription.mode.accurate"), LocalizedStringKey("settings.transcription.mode.accurate.description"))
     ]
-    
+
     var body: some View {
         List {
             ForEach(modes, id: \.0) { code, name, description in
@@ -400,7 +392,7 @@ struct TranscriptionModeSelectionView: View {
                                 .font(.body)
                             Text(description)
                                 .font(.caption)
-                                .foregroundColor(.gray)
+                                .foregroundColor(.secondary)
                         }
                         Spacer()
                         if selectedMode == code {
@@ -411,6 +403,6 @@ struct TranscriptionModeSelectionView: View {
                 }
             }
         }
-        .navigationTitle(NSLocalizedString("settings.transcription.mode", comment: "Transcription mode"))
+        .navigationTitle("settings.transcription.mode")
     }
 }
