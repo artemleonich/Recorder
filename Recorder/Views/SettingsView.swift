@@ -28,7 +28,7 @@ struct SettingsView: View {
                             .padding(.top)
 
                         // Language section
-                        SettingsSection(title: "settings.section.language", icon: "globe", iconColor: .blue) {
+                        SettingsSection(title: NSLocalizedString("settings.section.language", comment: "Language section"), icon: "globe", iconColor: .blue) {
                             NavigationLink(destination: LanguageSelectionView(selectedLanguage: binding(\.appLanguage))) {
                                 SettingsRow(
                                     title: "settings.language.app",
@@ -38,7 +38,7 @@ struct SettingsView: View {
                         }
 
                         // Appearance section
-                        SettingsSection(title: "settings.section.appearance", icon: "paintbrush.fill", iconColor: .purple) {
+                        SettingsSection(title: NSLocalizedString("settings.section.appearance", comment: "Appearance section"), icon: "paintbrush.fill", iconColor: .purple) {
                             NavigationLink(destination: AppearanceSelectionView(selectedAppearance: binding(\.appAppearance))) {
                                 SettingsRow(
                                     title: "settings.appearance.theme",
@@ -55,23 +55,28 @@ struct SettingsView: View {
                         }
 
                         // Transcription section
-                        SettingsSection(title: "settings.section.transcription", icon: "waveform", iconColor: .green) {
+                        SettingsSection(title: NSLocalizedString("settings.section.transcription", comment: "Transcription section"), icon: "waveform", iconColor: .green) {
                             NavigationLink(destination: TranscriptionModeSelectionView(selectedMode: binding(\.transcriptionMode))) {
                                 SettingsRow(
                                     title: "settings.transcription.mode",
                                     value: transcriptionModeDisplayName(viewModel.settings.transcriptionMode)
                                 )
                             }
-
+                            
                             Toggle(isOn: binding(\.allowAudioImport)) {
-                                Text("settings.transcription.import")
+                                Text(NSLocalizedString("settings.transcription.import", comment: "Import audio"))
+                                    .foregroundColor(.white)
                             }
                             .tint(Color.accentColor)
                             .padding()
-                            .background(sectionBackground)
-
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(.ultraThinMaterial)
+                            )
+                            
                             Toggle(isOn: binding(\.archiveAudio)) {
-                                Text("settings.transcription.archive")
+                                Text(NSLocalizedString("settings.transcription.archive", comment: "Archive audio"))
+                                    .foregroundColor(.white)
                             }
                             .tint(Color.accentColor)
                             .padding()
@@ -79,34 +84,43 @@ struct SettingsView: View {
 
                             VStack(alignment: .leading, spacing: 8) {
                                 Toggle(isOn: binding(\.autoDeleteOldMessages)) {
-                                    Text("settings.transcription.autodelete")
+                                    Text(NSLocalizedString("settings.transcription.autodelete", comment: "Auto-delete"))
+                                        .foregroundColor(.white)
                                 }
                                 .tint(Color.accentColor)
 
                                 if viewModel.settings.autoDeleteOldMessages {
-                                    Picker("settings.transcription.autodelete.days", selection: binding(\.autoDeleteDays)) {
-                                        Text("settings.transcription.autodelete.7days").tag(7)
-                                        Text("settings.transcription.autodelete.14days").tag(14)
-                                        Text("settings.transcription.autodelete.30days").tag(30)
-                                        Text("settings.transcription.autodelete.60days").tag(60)
-                                        Text("settings.transcription.autodelete.90days").tag(90)
+                                    Picker(NSLocalizedString("settings.transcription.autodelete.days", comment: "Delete after"), selection: binding(\.autoDeleteDays)) {
+                                        Text(NSLocalizedString("settings.transcription.autodelete.7days", comment: "7 days")).tag(7)
+                                        Text(NSLocalizedString("settings.transcription.autodelete.14days", comment: "14 days")).tag(14)
+                                        Text(NSLocalizedString("settings.transcription.autodelete.30days", comment: "30 days")).tag(30)
+                                        Text(NSLocalizedString("settings.transcription.autodelete.60days", comment: "60 days")).tag(60)
+                                        Text(NSLocalizedString("settings.transcription.autodelete.90days", comment: "90 days")).tag(90)
                                     }
                                     .pickerStyle(.menu)
                                     .tint(Color.accentColor)
                                 }
                             }
                             .padding()
-                            .background(sectionBackground)
-
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(.ultraThinMaterial)
+                            )
+                            
                             Toggle(isOn: binding(\.autoBackup)) {
-                                Text("settings.transcription.autobackup")
+                                Text(NSLocalizedString("settings.transcription.autobackup", comment: "Auto-backup"))
+                                    .foregroundColor(.white)
                             }
                             .tint(Color.accentColor)
                             .padding()
-                            .background(sectionBackground)
-
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(.ultraThinMaterial)
+                            )
+                            
                             Toggle(isOn: binding(\.soundEffects)) {
-                                Text("settings.transcription.soundeffects")
+                                Text(NSLocalizedString("settings.transcription.soundeffects", comment: "Sound effects"))
+                                    .foregroundColor(.white)
                             }
                             .tint(Color.accentColor)
                             .padding()
@@ -218,27 +232,6 @@ struct SettingsView: View {
             get: { viewModel.settings[keyPath: keyPath] },
             set: { viewModel.settings[keyPath: keyPath] = $0 }
         )
-    }
-
-    private var backgroundGradient: [Color] {
-        switch colorScheme {
-        case .dark:
-            return [
-                Color.black,
-                Color(hex: "0d0d0d"),
-                Color(hex: "111827")
-            ]
-        default:
-            return [
-                Color(.systemGroupedBackground),
-                Color(.systemBackground)
-            ]
-        }
-    }
-
-    private var sectionBackground: some View {
-        RoundedRectangle(cornerRadius: 12)
-            .fill(Color(.secondarySystemGroupedBackground))
     }
 }
 

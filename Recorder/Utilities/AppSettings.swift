@@ -110,14 +110,6 @@ final class AppSettings: ObservableObject {
         }
     }
 
-    /// Resolved locale for UI presentation
-    var locale: Locale {
-        if let identifier = localeIdentifier, !identifier.isEmpty {
-            return Locale(identifier: identifier)
-        }
-        return .autoupdatingCurrent
-    }
-
     // MARK: - Initialization
 
     private init(userDefaults: UserDefaults = .standard) {
