@@ -34,7 +34,7 @@ struct SettingsView: View {
                         
                         // Language section
                         SettingsSection(title: NSLocalizedString("settings.section.language", comment: "Language section"), icon: "globe", iconColor: .blue) {
-                            NavigationLink(destination: LanguageSelectionView(selectedLanguage: $viewModel.settings.appLanguage)) {
+                            NavigationLink(destination: LanguageSelectionView(selectedLanguage: binding(\.appLanguage))) {
                                 SettingsRow(
                                     title: NSLocalizedString("settings.language.app", comment: "App language"),
                                     value: languageDisplayName(viewModel.settings.appLanguage)
@@ -44,7 +44,7 @@ struct SettingsView: View {
                         
                         // Appearance section
                         SettingsSection(title: NSLocalizedString("settings.section.appearance", comment: "Appearance section"), icon: "paintbrush.fill", iconColor: .purple) {
-                            NavigationLink(destination: AppearanceSelectionView(selectedAppearance: $viewModel.settings.appAppearance)) {
+                            NavigationLink(destination: AppearanceSelectionView(selectedAppearance: binding(\.appAppearance))) {
                                 SettingsRow(
                                     title: NSLocalizedString("settings.appearance.theme", comment: "Theme"),
                                     value: appearanceDisplayName(viewModel.settings.appAppearance)
@@ -61,14 +61,14 @@ struct SettingsView: View {
                         
                         // Transcription section
                         SettingsSection(title: NSLocalizedString("settings.section.transcription", comment: "Transcription section"), icon: "waveform", iconColor: .green) {
-                            NavigationLink(destination: TranscriptionModeSelectionView(selectedMode: $viewModel.settings.transcriptionMode)) {
+                            NavigationLink(destination: TranscriptionModeSelectionView(selectedMode: binding(\.transcriptionMode))) {
                                 SettingsRow(
                                     title: NSLocalizedString("settings.transcription.mode", comment: "Transcription mode"),
                                     value: transcriptionModeDisplayName(viewModel.settings.transcriptionMode)
                                 )
                             }
                             
-                            Toggle(isOn: $viewModel.settings.allowAudioImport) {
+                            Toggle(isOn: binding(\.allowAudioImport)) {
                                 Text(NSLocalizedString("settings.transcription.import", comment: "Import audio"))
                                     .foregroundColor(.white)
                             }
@@ -79,7 +79,7 @@ struct SettingsView: View {
                                     .fill(.ultraThinMaterial)
                             )
                             
-                            Toggle(isOn: $viewModel.settings.archiveAudio) {
+                            Toggle(isOn: binding(\.archiveAudio)) {
                                 Text(NSLocalizedString("settings.transcription.archive", comment: "Archive audio"))
                                     .foregroundColor(.white)
                             }
@@ -91,14 +91,14 @@ struct SettingsView: View {
                             )
                             
                             VStack(alignment: .leading, spacing: 8) {
-                                Toggle(isOn: $viewModel.settings.autoDeleteOldMessages) {
+                                Toggle(isOn: binding(\.autoDeleteOldMessages)) {
                                     Text(NSLocalizedString("settings.transcription.autodelete", comment: "Auto-delete"))
                                         .foregroundColor(.white)
                                 }
                                 .tint(Color.primary)
                                 
                                 if viewModel.settings.autoDeleteOldMessages {
-                                    Picker(NSLocalizedString("settings.transcription.autodelete.days", comment: "Delete after"), selection: $viewModel.settings.autoDeleteDays) {
+                                    Picker(NSLocalizedString("settings.transcription.autodelete.days", comment: "Delete after"), selection: binding(\.autoDeleteDays)) {
                                         Text(NSLocalizedString("settings.transcription.autodelete.7days", comment: "7 days")).tag(7)
                                         Text(NSLocalizedString("settings.transcription.autodelete.14days", comment: "14 days")).tag(14)
                                         Text(NSLocalizedString("settings.transcription.autodelete.30days", comment: "30 days")).tag(30)
@@ -115,7 +115,7 @@ struct SettingsView: View {
                                     .fill(.ultraThinMaterial)
                             )
                             
-                            Toggle(isOn: $viewModel.settings.autoBackup) {
+                            Toggle(isOn: binding(\.autoBackup)) {
                                 Text(NSLocalizedString("settings.transcription.autobackup", comment: "Auto-backup"))
                                     .foregroundColor(.white)
                             }
@@ -126,7 +126,7 @@ struct SettingsView: View {
                                     .fill(.ultraThinMaterial)
                             )
                             
-                            Toggle(isOn: $viewModel.settings.soundEffects) {
+                            Toggle(isOn: binding(\.soundEffects)) {
                                 Text(NSLocalizedString("settings.transcription.soundeffects", comment: "Sound effects"))
                                     .foregroundColor(.white)
                             }
@@ -242,11 +242,18 @@ struct SettingsView: View {
         default: return NSLocalizedString("settings.transcription.mode.fast", comment: "Fast")
         }
     }
-    
+
     private func formatBytes(_ bytes: Int64) -> String {
         let formatter = ByteCountFormatter()
         formatter.countStyle = .file
         return formatter.string(fromByteCount: bytes)
+    }
+
+    private func binding<Value>(_ keyPath: ReferenceWritableKeyPath<AppSettings, Value>) -> Binding<Value> {
+        Binding(
+            get: { viewModel.settings[keyPath: keyPath] },
+            set: { viewModel.settings[keyPath: keyPath] = $0 }
+        )
     }
 }
 
