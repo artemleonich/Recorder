@@ -2,17 +2,14 @@
 //  AppSettings.swift
 //  Recorder
 //
-//  Created by Kiro on 10.11.2025.
+//  Created by Артём Леонов on 11/10/25.
 //
 
 import SwiftUI
 import Combine
 
-/// Application settings stored in UserDefaults
 @MainActor
 final class AppSettings: ObservableObject {
-
-    // MARK: - Nested Types
 
     private enum Keys {
         static let appLanguage = "appLanguage"
@@ -26,11 +23,7 @@ final class AppSettings: ObservableObject {
         static let soundEffects = "soundEffects"
     }
 
-    // MARK: - Singleton
-
     static let shared = AppSettings()
-
-    // MARK: - Properties
 
     private let userDefaults: UserDefaults
 
@@ -72,50 +65,30 @@ final class AppSettings: ObservableObject {
 
     private var cancellable: AnyCancellable?
 
-    // MARK: - Computed Properties
-
-    /// Transcription mode as enum
     var transcriptionModeEnum: TranscriptionMode {
-        get {
-            TranscriptionMode(rawValue: transcriptionMode) ?? .fast
-        }
-        set {
-            transcriptionMode = newValue.rawValue
-        }
+        get { TranscriptionMode(rawValue: transcriptionMode) ?? .fast }
+        set { transcriptionMode = newValue.rawValue }
     }
 
-    /// App appearance as ColorScheme
     var colorScheme: ColorScheme? {
         switch appAppearance {
-        case "light":
-            return .light
-        case "dark":
-            return .dark
-        default:
-            return nil // system default
+        case "light": return .light
+        case "dark": return .dark
+        default: return nil
         }
     }
 
-    /// App language as locale identifier
     var localeIdentifier: String? {
         switch appLanguage {
-        case "ru":
-            return "ru"
-        case "en":
-            return "en"
-        case "auto":
-            return nil // use system locale
-        default:
-            return nil
+        case "ru": return "ru"
+        case "en": return "en"
+        default: return nil
         }
     }
-
-    // MARK: - Initialization
 
     private init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
 
-        // Register default values
         userDefaults.register(defaults: [
             Keys.appLanguage: "auto",
             Keys.appAppearance: "system",
@@ -138,20 +111,16 @@ final class AppSettings: ObservableObject {
         autoDeleteDays = userDefaults.integer(forKey: Keys.autoDeleteDays)
         soundEffects = userDefaults.bool(forKey: Keys.soundEffects)
 
-        // Listen for external UserDefaults changes (e.g., from extensions)
         cancellable = NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
-                guard let self = self else { return }
-                self.syncFromUserDefaults()
+                self?.syncFromUserDefaults()
             }
     }
 
     deinit {
         cancellable?.cancel()
     }
-
-    // MARK: - Private Helpers
 
     private func persist<T>(_ value: T, forKey key: String) {
         userDefaults.set(value, forKey: key)

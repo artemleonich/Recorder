@@ -2,15 +2,13 @@
 //  AudioNoteEntity+Extensions.swift
 //  Recorder
 //
-//  Extension for mapping Core Data entity to Swift model
+//  Created by Артём Леонов on 11/10/25.
 //
 
 import Foundation
 import CoreData
 
 extension AudioNoteEntity {
-    /// Convert Core Data entity to Swift model
-    /// - Returns: AudioNote struct with all properties mapped
     func toAudioNote() -> AudioNote {
         AudioNote(
             id: id ?? UUID(),

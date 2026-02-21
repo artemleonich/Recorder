@@ -2,21 +2,15 @@
 //  TranscriptionMode.swift
 //  Recorder
 //
-//  Enum representing transcription modes with different speed/accuracy tradeoffs
+//  Created by Артём Леонов on 11/10/25.
 //
 
 import Foundation
 
 enum TranscriptionMode: String, CaseIterable, Codable {
-    /// Fast transcription using tiny/base Whisper model
     case fast
-    
-    /// Accurate transcription using small/medium Whisper model
     case accurate
-    
-    // MARK: - Computed Properties
-    
-    /// Human-readable display name for the mode
+
     var displayName: String {
         switch self {
         case .fast:
@@ -25,8 +19,7 @@ enum TranscriptionMode: String, CaseIterable, Codable {
             return NSLocalizedString("transcription.mode.accurate", comment: "Accurate transcription mode")
         }
     }
-    
-    /// Whisper model name to use for this mode
+
     var modelName: String {
         switch self {
         case .fast:
@@ -35,8 +28,7 @@ enum TranscriptionMode: String, CaseIterable, Codable {
             return "openai_whisper-small"
         }
     }
-    
-    /// Description of the mode for settings UI
+
     var description: String {
         switch self {
         case .fast:

@@ -1,3 +1,10 @@
+//
+//  NotesListView.swift
+//  Recorder
+//
+//  Created by Артём Леонов on 11/10/25.
+//
+
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -18,7 +25,6 @@ struct NotesListView: View {
                 .ignoresSafeArea()
 
                 VStack(spacing: 0) {
-                    // Sticky header
                     VStack(spacing: 16) {
                         HStack {
                             Text("notes.title")
@@ -27,7 +33,6 @@ struct NotesListView: View {
 
                             Spacer()
 
-                            // Import button
                             Button(action: {
                                 viewModel.showImportPicker = true
                             }) {
@@ -40,7 +45,6 @@ struct NotesListView: View {
                             .accessibilityLabel(LocalizationHelper.string("accessibility.import.button", locale: locale))
                         }
 
-                        // Search bar
                         HStack {
                             Image(systemName: "magnifyingglass")
                                 .foregroundColor(.secondary)
@@ -57,7 +61,6 @@ struct NotesListView: View {
                     .padding()
                     .background(headerBackground)
 
-                    // Notes list
                     if viewModel.isLoading {
                         Spacer()
                         ProgressView()
