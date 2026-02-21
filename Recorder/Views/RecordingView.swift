@@ -1,3 +1,10 @@
+//
+//  RecordingView.swift
+//  Recorder
+//
+//  Created by Артём Леонов on 11/10/25.
+//
+
 import SwiftUI
 
 struct RecordingView: View {
@@ -5,7 +12,7 @@ struct RecordingView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.locale) private var locale
-    
+
     var body: some View {
         ZStack {
             LinearGradient(
@@ -16,7 +23,6 @@ struct RecordingView: View {
             .ignoresSafeArea()
 
             VStack(spacing: 40) {
-                // Header
                 HStack {
                     Text("app.title")
                         .font(.title2)
@@ -29,17 +35,14 @@ struct RecordingView: View {
 
                 Spacer()
 
-                // Timer
                 Text(formatDuration(viewModel.duration))
                     .font(.system(size: 72, weight: .bold))
                     .monospacedDigit()
 
-                // Waveform
                 WaveformView(audioLevel: viewModel.audioLevel)
                     .frame(height: 100)
                     .padding(.horizontal, 40)
-                
-                // Record button
+
                 Button(action: {
                     Task {
                         if viewModel.isRecording {
@@ -60,7 +63,7 @@ struct RecordingView: View {
                                     .default,
                                 value: viewModel.isRecording
                             )
-                        
+
                         if viewModel.isRecording {
                             RoundedRectangle(cornerRadius: 4)
                                 .fill(.white)
@@ -80,12 +83,10 @@ struct RecordingView: View {
                     LocalizationHelper.string("accessibility.recording.stop.hint", locale: locale) :
                     LocalizationHelper.string("accessibility.recording.start.hint", locale: locale))
 
-                // Status text
                 Text(statusText)
                     .font(.body)
                     .foregroundColor(.secondary)
 
-                // Transcription progress
                 if viewModel.isTranscribing {
                     VStack(spacing: 8) {
                         ProgressView(value: viewModel.transcriptionProgress)

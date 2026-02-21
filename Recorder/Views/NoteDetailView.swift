@@ -1,3 +1,10 @@
+//
+//  NoteDetailView.swift
+//  Recorder
+//
+//  Created by Артём Леонов on 11/10/25.
+//
+
 import SwiftUI
 #if canImport(UIKit)
 import UIKit
@@ -13,13 +20,13 @@ struct NoteDetailView: View {
     @State private var showMenu = false
     @State private var editedTitle: String
     @State private var editedTranscript: String
-    
+
     init(viewModel: NoteDetailViewModel) {
         self.viewModel = viewModel
         _editedTitle = State(initialValue: viewModel.note.title)
         _editedTranscript = State(initialValue: viewModel.note.transcript)
     }
-    
+
     var body: some View {
         ZStack {
             LinearGradient(
@@ -30,7 +37,6 @@ struct NoteDetailView: View {
             .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Custom navigation bar
                 HStack {
                     Button(action: {
                         dismiss()
@@ -56,7 +62,6 @@ struct NoteDetailView: View {
                         }
 
                         Button(role: .destructive, action: {
-                            // Delete action would go here
                         }) {
                             Label("notes.delete", systemImage: "trash")
                         }
@@ -71,10 +76,9 @@ struct NoteDetailView: View {
                 .padding(.horizontal)
                 .padding(.vertical, 8)
                 .background(Color(.systemGroupedBackground).opacity(colorScheme == .dark ? 0.6 : 0.9))
-                
+
                 ScrollView {
                     VStack(spacing: 16) {
-                        // Title field
                         VStack(alignment: .leading, spacing: 8) {
                             Text("note.field.title")
                                 .font(.caption)
@@ -98,7 +102,6 @@ struct NoteDetailView: View {
                         .padding(.horizontal)
                         .padding(.top)
 
-                        // Date info
                         HStack {
                             Image(systemName: "calendar")
                                 .foregroundColor(.secondary)
@@ -118,7 +121,6 @@ struct NoteDetailView: View {
                         }
                         .padding(.horizontal)
 
-                        // Transcript editor
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Text("note.field.transcript")
@@ -127,7 +129,6 @@ struct NoteDetailView: View {
 
                                 Spacer()
 
-                                // Transcription status indicator
                                 if !viewModel.note.isTranscriptionCompleted {
                                     HStack(spacing: 4) {
                                         ProgressView()
@@ -153,7 +154,6 @@ struct NoteDetailView: View {
                                     .accessibilityLabel(LocalizationHelper.string("accessibility.transcript.field", locale: locale))
                                     .accessibilityHint(LocalizationHelper.string("accessibility.transcript.hint", locale: locale))
                             } else {
-                                // Placeholder while transcription is in progress
                                 VStack(spacing: 12) {
                                     ProgressView()
                                         .tint(Color.accentColor)
@@ -172,7 +172,6 @@ struct NoteDetailView: View {
                         }
                         .padding(.horizontal)
 
-                        // Share button
                         Button(action: {
                             showShareSheet = true
                         }) {
@@ -191,16 +190,13 @@ struct NoteDetailView: View {
                         .accessibilityLabel(LocalizationHelper.string("accessibility.share.button", locale: locale))
                         .accessibilityHint(LocalizationHelper.string("accessibility.share.hint", locale: locale))
                         .padding(.horizontal)
-                        
-                        // Spacer for audio player
+
                         Spacer()
                             .frame(height: 120)
                     }
                 }
-                
-                // Sticky audio player footer
+
                 VStack(spacing: 12) {
-                    // Progress slider
                     VStack(spacing: 4) {
                         Slider(
                             value: Binding(
@@ -234,7 +230,6 @@ struct NoteDetailView: View {
                     }
                     .padding(.horizontal)
 
-                    // Playback controls
                     HStack(spacing: 40) {
                         Button(action: {
                             viewModel.skipBackward()
@@ -285,13 +280,12 @@ struct NoteDetailView: View {
             }
         }
         .onChange(of: viewModel.note.transcript) { oldValue, newValue in
-            // Update editedTranscript when transcript changes (e.g., transcription completes)
+            // Sync local edit state only if user hasn't made diverging edits
             if editedTranscript == oldValue || editedTranscript.isEmpty {
                 editedTranscript = newValue
             }
         }
         .onChange(of: viewModel.note.title) { oldValue, newValue in
-            // Update editedTitle when title changes
             if editedTitle == oldValue {
                 editedTitle = newValue
             }
@@ -324,14 +318,14 @@ struct NoteDetailView: View {
         }
         #endif
     }
-    
+
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy, HH:mm"
         formatter.locale = locale
         return formatter.string(from: date)
     }
-    
+
     private func formatDuration(_ duration: TimeInterval) -> String {
         let minutes = Int(duration) / 60
         let seconds = Int(duration) % 60
@@ -355,15 +349,14 @@ struct NoteDetailView: View {
     }
 }
 
-// UIActivityViewController wrapper for SwiftUI
 #if canImport(UIKit)
 struct ActivityViewController: UIViewControllerRepresentable {
     let activityItems: [Any]
-    
+
     func makeUIViewController(context: Context) -> UIActivityViewController {
         UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
     }
-    
+
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 #endif

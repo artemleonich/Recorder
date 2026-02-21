@@ -1,3 +1,10 @@
+//
+//  SettingsView.swift
+//  Recorder
+//
+//  Created by Артём Леонов on 11/10/25.
+//
+
 import SwiftUI
 #if canImport(UIKit)
 import UIKit
@@ -7,7 +14,7 @@ struct SettingsView: View {
     @ObservedObject var viewModel: SettingsViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
-    
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -20,14 +27,12 @@ struct SettingsView: View {
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
-                        // Title
                         Text("settings.title")
                             .font(.largeTitle)
                             .fontWeight(.bold)
                             .padding(.horizontal)
                             .padding(.top)
 
-                        // Language section
                         SettingsSection(title: NSLocalizedString("settings.section.language", comment: "Language section"), icon: "globe", iconColor: .blue) {
                             NavigationLink(destination: LanguageSelectionView(selectedLanguage: binding(\.appLanguage))) {
                                 SettingsRow(
@@ -37,7 +42,6 @@ struct SettingsView: View {
                             }
                         }
 
-                        // Appearance section
                         SettingsSection(title: NSLocalizedString("settings.section.appearance", comment: "Appearance section"), icon: "paintbrush.fill", iconColor: .purple) {
                             NavigationLink(destination: AppearanceSelectionView(selectedAppearance: binding(\.appAppearance))) {
                                 SettingsRow(
@@ -54,7 +58,6 @@ struct SettingsView: View {
                             }
                         }
 
-                        // Transcription section
                         SettingsSection(title: NSLocalizedString("settings.section.transcription", comment: "Transcription section"), icon: "waveform", iconColor: .green) {
                             NavigationLink(destination: TranscriptionModeSelectionView(selectedMode: binding(\.transcriptionMode))) {
                                 SettingsRow(
@@ -62,7 +65,7 @@ struct SettingsView: View {
                                     value: transcriptionModeDisplayName(viewModel.settings.transcriptionMode)
                                 )
                             }
-                            
+
                             Toggle(isOn: binding(\.allowAudioImport)) {
                                 Text(NSLocalizedString("settings.transcription.import", comment: "Import audio"))
                                     .foregroundColor(.white)
@@ -73,7 +76,7 @@ struct SettingsView: View {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(.ultraThinMaterial)
                             )
-                            
+
                             Toggle(isOn: binding(\.archiveAudio)) {
                                 Text(NSLocalizedString("settings.transcription.archive", comment: "Archive audio"))
                                     .foregroundColor(.white)
@@ -106,7 +109,7 @@ struct SettingsView: View {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(.ultraThinMaterial)
                             )
-                            
+
                             Toggle(isOn: binding(\.autoBackup)) {
                                 Text(NSLocalizedString("settings.transcription.autobackup", comment: "Auto-backup"))
                                     .foregroundColor(.white)
@@ -117,7 +120,7 @@ struct SettingsView: View {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(.ultraThinMaterial)
                             )
-                            
+
                             Toggle(isOn: binding(\.soundEffects)) {
                                 Text(NSLocalizedString("settings.transcription.soundeffects", comment: "Sound effects"))
                                     .foregroundColor(.white)
@@ -127,7 +130,6 @@ struct SettingsView: View {
                             .background(sectionBackground)
                         }
 
-                        // Storage info
                         SettingsSection(title: "settings.section.storage", icon: "internaldrive", iconColor: .orange) {
                             VStack(alignment: .leading, spacing: 8) {
                                 HStack {
@@ -150,7 +152,6 @@ struct SettingsView: View {
                             .background(sectionBackground)
                         }
 
-                        // About section
                         SettingsSection(title: "settings.section.about", icon: "info.circle", iconColor: .gray) {
                             HStack {
                                 Text("settings.about.version")
@@ -166,7 +167,6 @@ struct SettingsView: View {
                             }
 
                             Button(action: {
-                                // Open App Store rating
                                 #if canImport(UIKit)
                                 if let url = URL(string: "https://apps.apple.com/app/id123456789?action=write-review") {
                                     UIApplication.shared.open(url)
@@ -194,7 +194,7 @@ struct SettingsView: View {
             viewModel.calculateStorageUsage()
         }
     }
-    
+
     private func languageDisplayName(_ code: String) -> LocalizedStringKey {
         switch code {
         case "auto": return "settings.language.auto"
@@ -235,7 +235,8 @@ struct SettingsView: View {
     }
 }
 
-// Settings section component
+// MARK: - Extracted Subviews
+
 struct SettingsSection<Content: View>: View {
     let title: LocalizedStringKey
     let icon: String
@@ -263,7 +264,6 @@ struct SettingsSection<Content: View>: View {
     }
 }
 
-// Settings row component
 struct SettingsRow: View {
     let title: LocalizedStringKey
     var value: LocalizedStringKey? = nil
@@ -292,7 +292,6 @@ struct SettingsRow: View {
     }
 }
 
-// Language selection view
 struct LanguageSelectionView: View {
     @Binding var selectedLanguage: String
     @Environment(\.dismiss) private var dismiss
@@ -327,7 +326,6 @@ struct LanguageSelectionView: View {
     }
 }
 
-// Appearance selection view
 struct AppearanceSelectionView: View {
     @Binding var selectedAppearance: String
     @Environment(\.dismiss) private var dismiss
@@ -362,11 +360,10 @@ struct AppearanceSelectionView: View {
     }
 }
 
-// Transcription mode selection view
 struct TranscriptionModeSelectionView: View {
     @Binding var selectedMode: String
     @Environment(\.dismiss) private var dismiss
-    
+
     let modes = [
         ("fast", LocalizedStringKey("settings.transcription.mode.fast"), LocalizedStringKey("settings.transcription.mode.fast.description")),
         ("accurate", LocalizedStringKey("settings.transcription.mode.accurate"), LocalizedStringKey("settings.transcription.mode.accurate.description"))

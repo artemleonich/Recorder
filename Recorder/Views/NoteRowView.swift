@@ -1,3 +1,10 @@
+//
+//  NoteRowView.swift
+//  Recorder
+//
+//  Created by Артём Леонов on 11/10/25.
+//
+
 import SwiftUI
 
 struct NoteRowView: View {
@@ -7,7 +14,6 @@ struct NoteRowView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Title and date
             HStack {
                 Text(note.title)
                     .font(.body)
@@ -23,9 +29,7 @@ struct NoteRowView: View {
                     .foregroundColor(.secondary)
             }
 
-            // Duration and status
             HStack {
-                // Duration
                 HStack(spacing: 4) {
                     Image(systemName: "waveform")
                         .font(.caption)
@@ -38,7 +42,6 @@ struct NoteRowView: View {
 
                 Spacer()
 
-                // Transcription status
                 HStack(spacing: 4) {
                     if note.isTranscriptionCompleted {
                         Image(systemName: "checkmark.circle.fill")
@@ -73,18 +76,17 @@ struct NoteRowView: View {
             }
         )
     }
-    
+
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM, HH:mm"
         formatter.locale = locale
         return formatter.string(from: date)
     }
-    
+
     private func formatDuration(_ duration: TimeInterval) -> String {
         let minutes = Int(duration) / 60
         let seconds = Int(duration) % 60
         return String(format: "%02d:%02d", minutes, seconds)
     }
-
 }

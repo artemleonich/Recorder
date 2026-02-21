@@ -1,10 +1,17 @@
+//
+//  MainTabView.swift
+//  Recorder
+//
+//  Created by Артём Леонов on 11/10/25.
+//
+
 import SwiftUI
 
 struct MainTabView: View {
     @ObservedObject var recordingViewModel: RecordingViewModel
     @ObservedObject var notesListViewModel: NotesListViewModel
     @ObservedObject var settingsViewModel: SettingsViewModel
-    
+
     init(
         recordingViewModel: RecordingViewModel,
         notesListViewModel: NotesListViewModel,
@@ -14,7 +21,7 @@ struct MainTabView: View {
         self.notesListViewModel = notesListViewModel
         self.settingsViewModel = settingsViewModel
     }
-    
+
     var body: some View {
         TabView {
             RecordingView(viewModel: recordingViewModel)
@@ -36,6 +43,6 @@ struct MainTabView: View {
                 .tag(2)
         }
         .tabViewStyle(.automatic)
-        .tint(Color(hex: "3b82f6")) // Primary color for selected tab
+        .tint(Color(hex: "3b82f6"))
     }
 }
