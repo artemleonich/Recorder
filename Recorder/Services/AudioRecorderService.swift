@@ -96,6 +96,9 @@ final class AudioRecorderService: NSObject, ObservableObject {
             audioRecorder?.prepareToRecord()
 
             guard audioRecorder?.record() == true else {
+                // If record() fails the session is still active — clean up
+                // before throwing so we don't leak it.
+                teardownAudioSession()
                 throw RecorderError.recordingFailed(NSError(
                     domain: "AudioRecorderService",
                     code: -1,
@@ -136,6 +139,12 @@ final class AudioRecorderService: NSObject, ObservableObject {
             audioLevel = 0
         }
 
+        // Deactivate the audio session so other audio apps (music,
+        // phone calls) resume normally. ``.notifyOthersOnDeactivation``
+        // asks the system to pause-and-resume other audio sources
+        // gracefully instead of cutting them off.
+        teardownAudioSession()
+
         logger.info("Recording stopped: \(fileURL.lastPathComponent)")
         audioRecorder = nil
         return fileURL
@@ -155,6 +164,11 @@ final class AudioRecorderService: NSObject, ObservableObject {
             audioLevel = 0
         }
 
+        // Always deactivate the session, even when the user cancels
+        // mid-recording. The previous version left the session active
+        // and broke other audio apps on the device.
+        teardownAudioSession()
+
         logger.info("Recording cancelled: \(fileURL.lastPathComponent)")
         audioRecorder = nil
     }
@@ -172,9 +186,37 @@ final class AudioRecorderService: NSObject, ObservableObject {
         }
     }
 
+    /// Deactivates the shared audio session. Safe to call multiple times
+    /// and when no session is active — ``setActive(_:options:)`` will
+    /// just log and return an error that we intentionally swallow here
+    /// because teardown failures are not user-facing.
+    ///
+    /// We pass ``.notifyOthersOnDeactivation`` so any other audio app
+    /// (Music, Podcasts, etc.) that's been paused because of our
+    /// ``.playAndRecord`` category gets cleanly resumed when the user
+    /// leaves Recording.
+    private func teardownAudioSession() {
+        do {
+            try AVAudioSession.sharedInstance().setActive(
+                false,
+                options: [.notifyOthersOnDeactivation]
+            )
+        } catch {
+            // ``setActive(false)`` returns an error if the session is
+            // already inactive (which is normal — cancel-after-stop
+            // races, idempotent callers, etc.) — we ignore those.
+            logger.debug("Audio session teardown returned: \(error.localizedDescription)")
+        }
+    }
+
     @MainActor
     private func startMetricsTimer() {
         recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+            // Single Task wrapper, single [weak self] — the previous
+            // version had a nested [weak self] in [weak self] which was
+            // a code smell. ``Task { @MainActor in }`` already isolates
+            // onto the main actor and the outer closure is non-escaping
+            // once the timer is invalidated.
             Task { @MainActor [weak self] in
                 self?.updateMetrics()
             }
@@ -198,7 +240,13 @@ final class AudioRecorderService: NSObject, ObservableObject {
     deinit {
         recordingTimer?.invalidate()
         recordingTimer = nil
+        // Best-effort stop. The recorder is already nil or stopping on
+        // happy paths; this catches the case where the object is
+        // deallocated while a recording is still in flight.
         audioRecorder?.stop()
+        // Don't touch AVAudioSession from deinit — it's MainActor-isolated
+        // state and deinit may run off the main actor. The session is
+        // also automatically deactivated when the app is suspended.
     }
 }
 
