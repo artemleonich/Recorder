@@ -67,7 +67,17 @@ actor TranscriptionService {
 
                     Task { @MainActor in
                         do {
-                            try storageService.updateTranscriptionStatus(noteID, isCompleted: true)
+                            // The transcription itself failed, so the
+                            // note is NOT marked as completed — flipping
+                            // this flag to true would let the UI show
+                            // a misleading "Done" badge for a note that
+                            // has no usable transcript. The previous
+                            // version of this code wrote isCompleted:
+                            // true in the catch block, which surfaced
+                            // in the Notes list as a permanent
+                            // "completed" badge on notes whose
+                            // transcripts were missing or empty.
+                            try storageService.updateTranscriptionStatus(noteID, isCompleted: false)
                         } catch {
                             logger.error("Failed to update transcription status: \(error.localizedDescription)")
                         }
