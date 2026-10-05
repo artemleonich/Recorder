@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/assets/mark.svg" width="40" height="40" alt="Recorder" />
+  <a href=".github/assets/light/mark.svg#gh-light-mode-only"><img src=".github/assets/light/mark.svg" width="40" height="40" alt="Recorder" /></a><a href=".github/assets/mark.svg#gh-dark-mode-only"><img src=".github/assets/mark.svg" width="40" height="40" alt="Recorder" /></a>
 </p>
 
 <h1 align="center">Recorder</h1>
@@ -7,7 +7,7 @@
 <p align="center"><strong>Запишите мысль. Найдите её в тексте.</strong></p>
 
 <p align="center">
-  <img src=".github/assets/stack.svg" height="28" alt="Swift · SwiftUI · WhisperKit" />
+  <a href=".github/assets/light/stack.svg#gh-light-mode-only"><img src=".github/assets/light/stack.svg" height="28" alt="Swift · SwiftUI · WhisperKit" /></a><a href=".github/assets/stack.svg#gh-dark-mode-only"><img src=".github/assets/stack.svg" height="28" alt="Swift · SwiftUI · WhisperKit" /></a>
 </p>
 
 iOS-приложение для голосовых заметок: запись аудио, локальная транскрипция через [WhisperKit](https://github.com/argmaxinc/WhisperKit), поиск и редактирование заметок.
