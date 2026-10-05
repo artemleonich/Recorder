@@ -1,3 +1,7 @@
+<p align="center">
+  <img src=".github/assets/mark.svg" width="40" height="40" alt="Recorder" />
+</p>
+
 <h1 align="center">Recorder</h1>
 
 <p align="center"><strong>Запишите мысль. Найдите её в тексте.</strong></p>
