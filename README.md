@@ -1,131 +1,87 @@
+<p align="center">
+  <img src=".github/assets/banner.svg" width="100%" alt="Recorder" />
+</p>
+
 # Recorder
 
-**[English](#english)** | **[Русский](#русский)**
+**Запишите мысль. Найдите её в тексте.**
 
----
+iOS-приложение для голосовых заметок: запись аудио, локальная транскрипция через [WhisperKit](https://github.com/argmaxinc/WhisperKit), поиск и редактирование заметок.
 
-<a id="english"></a>
+[Запуск](#запуск) · [Архитектура](#архитектура) · [Поддержка](Support.md) · [Конфиденциальность](PrivacyPolicy.md) · [English](#english)
 
-## 🎙 Recorder — Voice Notes with Transcription
+## Дизайн интерфейса
 
-An iOS app for recording voice notes with speech-to-text transcription powered by [WhisperKit](https://github.com/argmaxinc/WhisperKit).
-
-### Screenshots
+Макеты экранов из каталога [Дизайн](Дизайн): запись, список заметок, отдельная заметка и настройки.
 
 <p align="center">
-  <img src="Дизайн/hlavná_obrazovka_nahrávania/screen.png" width="200" alt="Recording Screen"/>
-  <img src="Дизайн/zoznam_poznámok/screen.png" width="200" alt="Notes List"/>
-  <img src="Дизайн/obrazovka_s_poznámkou/screen.png" width="200" alt="Note Detail"/>
-  <img src="Дизайн/obrazovka_nastavení/screen.png" width="200" alt="Settings"/>
+  <img src="Дизайн/hlavná_obrazovka_nahrávania/screen.png" width="200" alt="Макет экрана записи"/>
+  <img src="Дизайн/zoznam_poznámok/screen.png" width="200" alt="Макет списка заметок"/>
+  <img src="Дизайн/obrazovka_s_poznámkou/screen.png" width="200" alt="Макет отдельной заметки"/>
+  <img src="Дизайн/obrazovka_nastavení/screen.png" width="200" alt="Макет настроек"/>
 </p>
 
-### Features
+## Возможности
 
-- Audio recording with real-time waveform visualization
-- Speech-to-text transcription (WhisperKit, `whisper-base` / `whisper-small` models)
-- Two transcription modes: fast and accurate
-- Notes list with search, editing, and deletion
-- Import audio files for transcription
-- Auto-deletion of old recordings (7 / 14 / 30 / 60 / 90 days)
-- Auto-backup and audio archiving
-- Localization: Russian and English
-- Dark / light / system theme
-- Data storage with Core Data
+- **Запись и воспроизведение** с визуализацией волновой формы.
+- **Речь в текст** через WhisperKit: быстрый режим `openai_whisper-base` и точный `openai_whisper-small`.
+- **Заметки** с поиском по названию и транскрипции, редактированием и удалением.
+- **Импорт аудио:** M4A, MP3, WAV, AAC и CAF.
+- **Локальное хранение:** заметки в Core Data, аудиофайлы в каталоге приложения.
+- **Оформление:** русский и английский языки; светлая, тёмная и системная темы.
 
-### Requirements
+В настройках также предусмотрены интервалы удаления старых записей — 7, 14, 30, 60 и 90 дней — и переключатели архивирования и автобэкапа. Эти настройки требуют отдельной проверки поведения: наличие переключателя само по себе не подтверждает выполнение резервного копирования.
 
-- iOS 17.0+
-- Xcode 16+
-- Swift 5.9+
+## Запуск
 
-### Project Structure
+Нужны macOS, Xcode и устройство или симулятор с **iOS 17.0+**. Проект сохранён в Xcode **26.1**, язык проекта — Swift 5.
 
-```
-Recorder/
-├── CoreData/        — Core Data model and extensions
-├── Models/          — Data models (AudioNote, TranscriptionMode, etc.)
-├── Services/        — Services (recording, playback, storage, transcription)
-├── Transcription/   — Transcription engine (WhisperKit)
-├── Utilities/       — Utilities (settings, formatters, logger, monitoring)
-├── ViewModels/      — View models (Recording, NotesList, NoteDetail, Settings)
-├── Views/           — SwiftUI screens
-└── Resources/       — Localization (Localizable.xcstrings)
+```bash
+git clone https://github.com/artemleonich/Recorder.git
+cd Recorder
+open Recorder.xcodeproj
 ```
 
-### Architecture
+1. Дождитесь разрешения зависимости WhisperKit через Swift Package Manager.
+2. Выберите схему `Recorder` и устройство или симулятор.
+3. Для физического устройства укажите свою команду в **Signing & Capabilities**; при необходимости смените Bundle Identifier.
+4. Нажмите `Cmd + R` и разрешите доступ к микрофону для записи.
 
-The app follows the MVVM (Model-View-ViewModel) pattern with a service layer. Dependency injection is handled through a `ServiceContainer` singleton. Key services include `AudioRecorderService`, `TranscriptionService`, `NotesStorageService`, and `FileStorageService`.
+Подготовка моделей WhisperKit при первом использовании может требовать интернета. Транскрипция выполняется на устройстве; её скорость зависит от устройства и выбранной модели.
 
-### Build & Run
+## Архитектура
 
-1. Open `Recorder.xcodeproj` in Xcode.
-2. Select a target device or simulator.
-3. Press `Cmd + R`.
+Swift · SwiftUI · Core Data · AVFoundation · Combine · WhisperKit.
 
-### License
+Приложение использует **MVVM** и сервисный слой. `ServiceContainer` связывает запись, хранение и транскрипцию; `WhisperTranscriptionEngine` реализует асинхронный движок распознавания.
 
-All rights reserved.
+| Каталог | Назначение |
+| --- | --- |
+| [Recorder/CoreData](Recorder/CoreData) | Модель Core Data и преобразования сущностей |
+| [Recorder/Models](Recorder/Models) | Заметки, режимы и результаты транскрипции |
+| [Recorder/Services](Recorder/Services) | Запись, воспроизведение, файлы и заметки |
+| [Recorder/Transcription](Recorder/Transcription) | Интерфейс движка и реализация WhisperKit |
+| [Recorder/ViewModels](Recorder/ViewModels) | Логика экранов |
+| [Recorder/Views](Recorder/Views) | SwiftUI-интерфейс |
+| [Recorder/Utilities](Recorder/Utilities) | Настройки, форматирование и диагностика |
+| [Recorder/Resources](Recorder/Resources) | Локализация |
+| [RecorderTests](RecorderTests) | Исходники проверок сервисов, интеграции и интерфейса |
 
----
+Каталог `RecorderTests` есть в репозитории; для запуска проверок его необходимо подключить к тестовой цели Xcode — текущий файл проекта содержит только цель приложения.
 
-<a id="русский"></a>
+## Поддержка и конфиденциальность
 
-## 🎙 Recorder — Голосовые заметки с транскрипцией
+Инструкции для пользователей — в [Support.md](Support.md). Обработка данных описана в [PrivacyPolicy.md](PrivacyPolicy.md).
 
-iOS-приложение для записи голосовых заметок с транскрипцией речи в текст на базе [WhisperKit](https://github.com/argmaxinc/WhisperKit).
+## English
 
-### Скриншоты
+Recorder is an iOS voice-notes app built with SwiftUI, Core Data, and WhisperKit. It supports recording and playback, on-device transcription in fast and accurate modes, audio import, note search and editing, Russian / English localization, and light / dark / system appearance.
 
-<p align="center">
-  <img src="Дизайн/hlavná_obrazovka_nahrávania/screen.png" width="200" alt="Экран записи"/>
-  <img src="Дизайн/zoznam_poznámok/screen.png" width="200" alt="Список заметок"/>
-  <img src="Дизайн/obrazovka_s_poznámkou/screen.png" width="200" alt="Детали заметки"/>
-  <img src="Дизайн/obrazovka_nastavení/screen.png" width="200" alt="Настройки"/>
-</p>
+Open `Recorder.xcodeproj`, resolve Swift packages, choose the `Recorder` scheme, configure signing for a physical device, and press `Cmd + R`. The deployment target is iOS 17.0; the project was saved with Xcode 26.1. Model preparation may need internet access.
 
-### Возможности
+The images above are design mockups. Backup-related settings and the test sources require further integration or verification.
 
-- Запись аудио с визуализацией волновой формы в реальном времени
-- Транскрипция речи в текст (WhisperKit, модели `whisper-base` / `whisper-small`)
-- Два режима транскрипции: быстрый и точный
-- Список заметок с поиском, редактированием и удалением
-- Импорт аудиофайлов для транскрипции
-- Автоудаление старых записей (7 / 14 / 30 / 60 / 90 дней)
-- Автобэкап и архивирование аудио
-- Локализация: русский и английский
-- Тёмная / светлая / системная тема оформления
-- Хранение данных в Core Data
+## Права / Rights
 
-### Требования
+Все права защищены. / All rights reserved.
 
-- iOS 17.0+
-- Xcode 16+
-- Swift 5.9+
-
-### Структура проекта
-
-```
-Recorder/
-├── CoreData/        — Core Data модель и расширения
-├── Models/          — Модели данных (AudioNote, TranscriptionMode и др.)
-├── Services/        — Сервисы (запись, воспроизведение, хранение, транскрипция)
-├── Transcription/   — Движок транскрипции (WhisperKit)
-├── Utilities/       — Утилиты (настройки, форматтеры, логгер, мониторинг)
-├── ViewModels/      — View-модели (Recording, NotesList, NoteDetail, Settings)
-├── Views/           — SwiftUI-экраны
-└── Resources/       — Локализация (Localizable.xcstrings)
-```
-
-### Архитектура
-
-Приложение построено по паттерну MVVM (Model-View-ViewModel) с сервисным слоем. Внедрение зависимостей реализовано через синглтон `ServiceContainer`. Ключевые сервисы: `AudioRecorderService`, `TranscriptionService`, `NotesStorageService` и `FileStorageService`.
-
-### Сборка
-
-1. Откройте `Recorder.xcodeproj` в Xcode.
-2. Выберите целевое устройство или симулятор.
-3. Нажмите `Cmd + R`.
-
-### Лицензия
-
-Все права защищены.
