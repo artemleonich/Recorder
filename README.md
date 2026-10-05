@@ -1,10 +1,10 @@
+<h1 align="center">Recorder</h1>
+
+<p align="center"><strong>Запишите мысль. Найдите её в тексте.</strong></p>
+
 <p align="center">
-  <img src=".github/assets/banner.svg" width="100%" alt="Recorder" />
+  <img src=".github/assets/stack.svg" height="28" alt="Swift · SwiftUI · WhisperKit" />
 </p>
-
-# Recorder
-
-**Запишите мысль. Найдите её в тексте.**
 
 iOS-приложение для голосовых заметок: запись аудио, локальная транскрипция через [WhisperKit](https://github.com/argmaxinc/WhisperKit), поиск и редактирование заметок.
 
